@@ -1,0 +1,20 @@
+### obtener todos los datos
+http://localhost:3000/api/
+### obtener un dato
+http://localhost:3000/api/52934202-9
+
+#### filtro
+http://localhost:3000/api/filtro?generacion=2020&carrera=Ingeniería comercial
+
+### login usuario
+POST  http://localhost:3000/SuperAdmin/login
+Content-Type: application/json
+
+{
+  "usuario": "superadmin1",
+  "contrasenia":"superAdmin123"
+  
+}
+
+###
+GET http://localhost:3000/SuperAdmin/
