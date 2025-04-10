@@ -1,11 +1,10 @@
 ### obtener todos los datos
-http://localhost:3000/api/
+GET http://localhost:3000/api/
 ### obtener un dato
-http://localhost:3000/api/52934202-9
+GET http://localhost:3000/api/73414685-6
 
 #### filtro
-http://localhost:3000/api/filtro?generacion=2020&carrera=Ingeniería comercial
-
+http://localhost:3000/api/filtro?nombre=Austin%20Beier
 ### login usuario
 POST  http://localhost:3000/SuperAdmin/login
 Content-Type: application/json
@@ -18,3 +17,30 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/SuperAdmin/
+
+### Crear usuario 
+POST http://localhost:3000/api/crear
+Content-Type: application/json
+
+{
+  "rut": "71103596-9",
+  "nombre": "Austin Beier",
+  "carrera": "Contador auditor"
+}
+### Actualizar usuario
+PUT http://localhost:3000/api/actualizar
+Content-Type: application/json
+
+{
+  "rut": "21099622-0"
+}
+### acutalizar usuario
+POST http://localhost:3000/admin/login
+Content-Type: application/json
+
+{
+  "usuario": "admin1",
+  "contrasenia":"admin123"
+}
+
+

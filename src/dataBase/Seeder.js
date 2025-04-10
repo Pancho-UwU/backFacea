@@ -2,7 +2,6 @@ import {dynamoDBDoc,dynamoDB} from './Database.js';
 import faker from 'faker';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
-import { tr } from 'faker/lib/locales.js';
 
 const generarUsuarios = async () => {
     const usuarios = [];
@@ -11,22 +10,20 @@ const generarUsuarios = async () => {
             id: uuidv4(),
             rut: `${faker.datatype.number({ min: 10000000, max: 99999999 })}-${faker.datatype.number({ min: 0, max: 9 })}`,
             nombre: faker.name.findName(),
-            correo: `${faker.internet.userName()}@alumnos.ucn.cl`,
-            generacion: faker.datatype.number({ min: 2010, max: 2024 }),
-            carrera: faker.random.arrayElement(['ICCI', 'otra carrera', 'Contador auditor', 'Ingeniería comercial']),
+            carrera: faker.random.arrayElement(['Ingeniería en Control de Gestión', 'Contador auditor', 'Ingeniería comercial']),
+            isActive: 1,
         });
     }
     return usuarios;
 };
 
 const generarAdmins = async () => {
+    const passwordHash = await bcrypt.hash('admin123', 10); // Hash the password
     return [{
         id: '1',
         usuario: 'admin1',
-        contrasenia: 'admin123',
-        carrera: 'Administración',
+        contrasenia: passwordHash,
         nombre: 'Admin 1',
-        generacion: '2020',
     }];
 };
 const generateSuperAdmin = async () => {

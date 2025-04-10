@@ -1,7 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import router from './routes/index.js';
-import superAdmin from './routes/superAdmin.js';
+import adminRouter from './routes/admin.js';
 import {seeder} from './dataBase/Seeder.js';
 import { corsMiddleware } from './middlewares/corsMiddelwares.js';
 
@@ -17,7 +17,7 @@ seeder().then(() => {
     console.error('Error al ejecutar el seeder:', error);
 });
 // Rutas
+app.use('/admin', adminRouter);
 app.use('/api', router);
-app.use('/SuperAdmin',superAdmin)
 
 export default app;
