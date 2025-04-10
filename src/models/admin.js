@@ -1,37 +1,27 @@
-import { dynamoDBDoc } from "../dataBase/Database.js";
+import {poolDatabase} from '../dataBase/Database.js';
 import bcrypt from 'bcryptjs';
 
 export class adminModel
 {
     static async login(user, password) {
-        const params = {
-                    TableName: "admins",
-                    FilterExpression: 'usuario = :usuario',
-                    ExpressionAttributeValues: {
-                        ':usuario': user,
-                    },
-                };
-                try{
-                    const result = await dynamoDBDoc.scan(params).promise();
-                    if (result.Items.length === 0) {
-                        throw new Error("Usuario no encontrado");
-                    }
-                    
-                    const admin = result.Items[0];
-                    
-                    /*
-                    const passwordMatch = await bcrypt.compare(password, admin.contrasenia);
-                    
-                    if (!passwordMatch) {
-                        return { message: "Contraseña incorrecta",
-                            inicio:false
-                         };               }   
-                    */
-                    return admin; // Retorna el super admin encontrado
-                }catch(error){
-                    console.error('Error al obtener el  admin:', error);
-                    throw new Error('Error al obtener el admin');
-                }
+        
+        const query = `SELECT * FROM admins WHERE usuario = $1`;
+        const params = [user];
+        const result = await poolDatabase.query(query, params);
+        const rows = result.rows;
+        if ( rows.length === 0) {
+            return { inicio: false, message: "Usuario no encontrado" };
+        }
+        const passwordHash = await bcrypt.compare(password, rows[0].contrasenia);
+        if (!passwordHash) {
+            return { inicio: false, message: "Contraseña incorrecta" };
+        }
+        return {
+            inicio: true,
+            usuario: rows[0].usuario,
+            nombre: rows[0].nombre,
+            contrasenia: rows[0].contrasenia,
+        };
                      
     }
 

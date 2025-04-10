@@ -1,36 +1,36 @@
 ### obtener todos los datos
 GET http://localhost:3000/user/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDMwNTcxNCwiZXhwIjoxNzQ0MzA5MzE0fQ.7l6EMnDk4QnSA1fcJn6DDi_RItO2v6u6m93mZvI0mlY
 
 ### obtener un dato
-GET http://localhost:3000/user/73414685-6
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
+GET http://localhost:3000/user/20833982-6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDMwMzc0NCwiZXhwIjoxNzQ0MzA3MzQ0fQ.U4Rj0Vj5HMQMo4kgQyrr2vIw10RB7J6GJ6DglSRGvcQ
 
 
 #### filtro
-http://localhost:3000/user/filtro?nombre=Austin%20Beier
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
+http://localhost:3000/user/filtro?isActive=0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDMwNTcxNCwiZXhwIjoxNzQ0MzA5MzE0fQ.7l6EMnDk4QnSA1fcJn6DDi_RItO2v6u6m93mZvI0mlY
 
 
 ###
 
 ### Crear usuario 
 POST http://localhost:3000/user/crear
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDgxOCwiZXhwIjoxNzQ0MjU0NDE4fQ.4KDUjm7hKSKoElmDYonAlq_uHxJzaZg98L0xbDFoPjo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDMwNTcxNCwiZXhwIjoxNzQ0MzA5MzE0fQ.7l6EMnDk4QnSA1fcJn6DDi_RItO2v6u6m93mZvI0mlY
 Content-Type: application/json
 
 {
-  "rut": "71103596-9",
-  "nombre": "Austin Beier",
+  "rut": "21713690-3",
+  "nombre": "javier aaguirre",
   "carrera": "Contador auditor"
 }
 ### Actualizar usuario
 PUT http://localhost:3000/user/actualizar
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDMwOTM0OSwiZXhwIjoxNzQ0MzEyOTQ5fQ.55uJi4AV7f8sQPX4dKmv3ZCNbGdCQENjPtrlk64FzgA
 
 {
-  "rut": "21099622-0"
+  "rut": "12345678-9"
 }
 ### acutalizar usuario
 POST http://localhost:3000/admin/login

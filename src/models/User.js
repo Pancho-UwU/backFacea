@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dynamoDBDoc } from "../dataBase/Database.js";
+import { poolDatabase } from '../dataBase/Database.js';
 import {validatorRut}  from "../validators/validatorRut.js";
 
 export class userModel
@@ -9,20 +9,21 @@ export class userModel
     */
     static async getUser({rut})
     {
-
-        const params={
-            TableName:'usuarios',
-            FilterExpression: 'rut = :rut AND isActive = :isActive',
-            ExpressionAttributeValues: {
-                ':rut': rut,
-                ':isActive': 1,
-            },
-        };
         try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
-        }catch(error){
-            console.error('Error al obtener el usuario:', error);
+            let query = `SELECT * FROM usuarios WHERE isActive = 1 and rut = $1`;
+            const params = [rut];
+            
+            const {rows} = await poolDatabase.query(query, params);
+            if (rows.length === 0) {
+                return {message: 'Usuario no encontrado',
+                    user: false,
+                }; // Usuario no encontrado
+            }
+            return rows[0]; // Retorna el usuario encontrado
+            
+        }
+        catch(error){
+            console.error('Error al obtener el usuario:', error.message);
             throw new Error('Error al obtener el usuario');
         }
     }
@@ -32,42 +33,36 @@ export class userModel
     metodo probado busqueda .  
     */
     static async getUserFilter({ carrera, isActive, nombre }) {
-        const params = {
-            TableName: 'usuarios',
-        };
-    
-        const filterExpressions = [];
-        const expressionAttributeValues = {};
-        
-        if (nombre)
-            {
-                filterExpressions.push('nombre = :nombre');
-                expressionAttributeValues[':nombre'] = nombre;
-            }
-        if (carrera) {
-            filterExpressions.push('carrera = :carrera');
-            expressionAttributeValues[':carrera'] = carrera;
+        let query = `SELECT * FROM usuarios WHERE 1=1`;
+        const params = [];
+        let paramsIndex = 1;
+        if(carrera) {
+            query += ` AND carrera = $${paramsIndex++}`;;
+            params.push(carrera);
         }
-        // Siempre añadimos isActive al filtro
-        filterExpressions.push('isActive = :isActive');
-        expressionAttributeValues[':isActive'] = isActive !== undefined ? 
-        (typeof isActive === 'string' ? parseInt(isActive, 10) : isActive) : 1;
-    
-        // Si hay filtros, se agregan al scan
-        if (filterExpressions.length > 0) {
-            params.FilterExpression = filterExpressions.join(' AND ');
-            params.ExpressionAttributeValues = expressionAttributeValues;
+        if (nombre){
+            query += ` AND nombre = $${paramsIndex++}`;
+            params.push(nombre); // Agrega comodines para búsqueda parcial
+        }
+        if (isActive!==undefined) {
+            query += ` AND isActive = $${paramsIndex++}`;
+            params.push(parseInt(isActive)); // Agrega comodines para búsqueda parcial
+        }
+        else{
+            query += ` AND isActive = 1`;    
         }
     
-        console.log('DynamoDB Filter Params:', JSON.stringify(params, null, 2)); // Depuración
     
         try {
-            // Si no hay filtros, scan traerá todos los elementos
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items;
+            const {rows} = await poolDatabase.query(query, params);
+            if (rows.length === 0) {
+                return {message:'Usuario no encontrao',
+                    user: false,
+                }; // Usuario no encontrado
+            }
+            return rows; // Retorna el usuario encontrado
         } catch (error) {
-            console.error('Error al obtener los usuarios:', error);
-            throw new Error('Error al obtener los usuarios');
+            throw new Error('Error al obtener los usuarios desde antes', error.message);
         }
     }
     /*
@@ -93,10 +88,13 @@ export class userModel
         }
 
         // Verificar si el usuario ya existe
-        const existingUser = await this.getUser( {rut} );
-        if (existingUser) {
-            return { message: 'Usuario ya existe',
+        const existingUser = await this.getUserByRut( rut );
+        console.log(rut)
+        if (existingUser.user) {
+            console.log('El usuario no existe', existingUser.user);
+            return { message: 'Usuario ya existe wuaaaa',
                 create: false,
+                user: existingUser,
              };
         }
         const carrerasValidas = ['Ingeniería en Información y Control de Gestión', 'Contador auditor', 'Ingeniería comercial'];
@@ -105,79 +103,75 @@ export class userModel
                 create: false,
             }
         }
-        const params = {
-            TableName: 'usuarios',
-            Item: {
-                rut: rut,
-                carrera: carrera,
-                nombre: nombre,
-                isActive: 1,
-                id: uuidv4(),
-            },
-        };
-    
+        const query = 'INSERT INTO usuarios ( rut, carrera, nombre, isActive) VALUES ( $1, $2, $3, 1) returning *';
+        const params = [rut, carrera, nombre];
+
         try {
-            await dynamoDBDoc.put(params).promise();
-            console.log('Usuario creado:', params.Item);
-            return params.Item;
+            const{rows} = await poolDatabase.query(query, params);
+            console.log({message:rows[0],});
+
+            return ({message: 'Usuario creado',
+                create: true,
+                user: rows[0],
+            });
         } catch (error) {
             console.error('Error al crear el usuario:', error);
-            throw new Error('Error al crear el usuario');
+            throw new Error('Error al crear el usuario giaaaa', error.message);
         }
-
     }
     /*
     Metodo para obtener todos los usuarios activos, este metodo esta probado y funciona
     */
     static async getAllUsers()
     {
-        const params={
-            TableName:'usuarios',
-            FilterExpression: 'isActive = :isActive',
-            ExpressionAttributeValues: {
-                ':isActive': 1,
-            },
-        };
-        try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
-        }catch(error){
-            console.error('Error al obtener el usuario:', error);
-            throw new Error('Error al obtener el usuario');
+        const query = `SELECT * FROM usuarios WHERE isActive = 1`;
+        try {
+            const {rows} = await poolDatabase.query(query);
+            if (rows.length === 0) {
+                return {message:'No hay usuarios activos',
+                    user: false,
+                }; // Usuario no encontrado
+            }
+            return rows; // Retorna el usuario encontrado
+        } catch (error) {
+            console.error('Error al obtener los usuarios:', error);
+            throw new Error('Error al obtener los usuarios');
         }
+        
     }
     /*
     Metodo para actualizar el estado de un usuario, este metodo esta probado y funciona
     */
     static async desactivUser({rut}){
-
+        console.log
         if (!rut) {
             return { message: 'Faltan datos' };
         }
         
         const userP = await this.getUserByRut(rut);
-        if (!userP) {
-            return { message: 'Usuario no encontrado' };
+        console.log({message:userP});
+
+        if (userP.length === 0 || userP.user === false) {
+            console.log('El usuario no existe', userP.user);
+
+            return { message: 'Usuario no encontrado', rut };
         }
         
+        const isActive = userP.isactive === 1 ? 0 : 1; // Cambia el estado de isActive
 
-        const params = {
-            TableName: 'usuarios',  
-            Key: { id: userP[0].id},
-            UpdateExpression: 'set isActive = :isActive',
-            ExpressionAttributeValues: {
-                ':isActive': userP[0].isActive == 0 ? 1 : 0, // Cambia el estado de isActive
-            },
-        };
-
+        const query = `UPDATE usuarios SET isActive = $1 WHERE rut = $2 returning *`;
+        const params2 = [isActive, rut];
         try {
-            console.log("holaa")
-            await dynamoDBDoc.update(params).promise();
-            console.log('Usuario desactivado:', rut);
-            return { message: 'Usuario desactivado/activado' };
+            const {rows} = await poolDatabase.query(query, params2);
+            if (rows.affectedRows === 0) {
+                return { message: 'No se pudo actualizar el usuario',
+                    user: false,
+                 };
+            }
+            return { message: 'Usuario actualizado', user: rows[0] };
         } catch (error) {
-            console.error('Error al desactivar el usuario:', error);
-            throw new Error('Error al desactivar el usuario PLSSS');
+            console.error('Error al actualizar el usuario:', error);
+            throw new Error('Error al actualizar el usuario');
         }
     }
     /*
@@ -187,19 +181,19 @@ export class userModel
     */
     static async getUserByRut(rut)
     {
-        const params = {
-            TableName: 'usuarios',
-            FilterExpression: 'rut = :rut',
-            ExpressionAttributeValues: {
-                ':rut': rut,
-            },
-        };
-        try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
-        }catch(error){
+        const query = `SELECT * FROM usuarios WHERE rut = $1`;
+        const params = [rut];
+        try {
+            const {rows} = await poolDatabase.query(query, params);
+            if (rows.length === 0) {
+                return {message:'Usuario no encontrado',
+                    user: false,
+                }; // Usuario no encontrado
+            }
+            return rows[0]; // Retorna el usuario encontrado
+        } catch (error) {
             console.error('Error al obtener el usuario:', error);
-            throw new Error('Error al obtener el usuario');
+            throw new Error('Error al obtener el usuario', error.message);
         }
     }
 
