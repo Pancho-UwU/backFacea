@@ -1,25 +1,22 @@
 ### obtener todos los datos
-GET http://localhost:3000/api/
+GET http://localhost:3000/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
+
 ### obtener un dato
-GET http://localhost:3000/api/73414685-6
+GET http://localhost:3000/user/73414685-6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
+
 
 #### filtro
-http://localhost:3000/api/filtro?nombre=Austin%20Beier
-### login usuario
-POST  http://localhost:3000/SuperAdmin/login
-Content-Type: application/json
+http://localhost:3000/user/filtro?nombre=Austin%20Beier
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
 
-{
-  "usuario": "superadmin1",
-  "contrasenia":"superAdmin123"
-  
-}
 
 ###
-GET http://localhost:3000/SuperAdmin/
 
 ### Crear usuario 
-POST http://localhost:3000/api/crear
+POST http://localhost:3000/user/crear
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDgxOCwiZXhwIjoxNzQ0MjU0NDE4fQ.4KDUjm7hKSKoElmDYonAlq_uHxJzaZg98L0xbDFoPjo
 Content-Type: application/json
 
 {
@@ -28,8 +25,9 @@ Content-Type: application/json
   "carrera": "Contador auditor"
 }
 ### Actualizar usuario
-PUT http://localhost:3000/api/actualizar
+PUT http://localhost:3000/user/actualizar
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
 
 {
   "rut": "21099622-0"
