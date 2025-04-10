@@ -18,6 +18,6 @@ seeder().then(() => {
 });
 // Rutas
 app.use('/admin', adminRouter);
-app.use('/api', router);
+app.use('/user', router);
 
 export default app;
