@@ -20,7 +20,7 @@ export class userModel
         };
         try{
             const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
+            return result.Items[0] 
         }catch(error){
             console.error('Error al obtener el usuario:', error);
             throw new Error('Error al obtener el usuario');
