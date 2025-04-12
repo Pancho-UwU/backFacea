@@ -4,6 +4,7 @@ import {validatorRut}  from "../validators/validatorRut.js";
 import { PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import id from 'faker/lib/locales/id_ID/index.js';
+import { object } from 'zod';
 
 export class userModel
 {
@@ -42,17 +43,21 @@ export class userModel
     Metodo para obtener usuarios filtrados, por carrera y si esta activo, tambien sirve para buscar por nombre.
     metodo probado busqueda .  
     */
-    static async getUserFilter({ carrera, isActive, nombre }) {
+    static async getUserFilter({ carrera, isActive, nombre,limit, lastkey }) {
         const params = {
             TableName: 'usuarios',
+            Limit:limit
         };
-    
+        const params2={
+            TableName: 'usuarios',
+        }
+        
         const filterExpressions = [];
         const expressionAttributeValues = {};
         
         if (nombre)
             {
-                filterExpressions.push('nombre = :nombre');
+                filterExpressions.push('contains(nombre,:nombre)');
                 expressionAttributeValues[':nombre'] = {S: nombre};
             }
         if (carrera) {
@@ -67,13 +72,34 @@ export class userModel
         if (filterExpressions.length > 0) {
             params.FilterExpression = filterExpressions.join(' AND ');
             params.ExpressionAttributeValues = expressionAttributeValues;
+            params2.FilterExpression = filterExpressions.join(' AND ');
+            params2.ExpressionAttributeValues = expressionAttributeValues;
+            params2.Select='COUNT';
         }
+        
     
-        console.log('DynamoDB Filter Params:', JSON.stringify(params, null, 2)); // Depuración
-    
+        if(lastkey)
+            {
+                params.ExclusiveStartKey = {id:{S: lastkey}}
+
+            }
+        let itemsTotal =null
+        let totalPage= null
         try {
             // Si no hay filtros, scan traerá todos los elementos
             const result = await client.send(new ScanCommand(params));
+            if(lastkey === null || lastkey === undefined)
+                {
+                    const resultCount = await client.send(new ScanCommand(params2));
+                    itemsTotal= resultCount.Count;
+                    totalPage = 1
+                    if(limit && limit >0)
+                        {
+                            totalPage = Math.trunc(itemsTotal/limit)+1 ||1
+
+                        }
+                    
+                }
             const users = result.Items.map(items=>({
                 id: items.id.S,
                 nombre: items.nombre.S,
@@ -82,7 +108,11 @@ export class userModel
                 isActive: parseInt(items.isActive.N)
 
             }))
-            return users;
+            return {items: users,
+                contPage: totalPage,
+                itemsTotal,
+                lastkey: result.LastEvaluatedKey?.id?.S || null,
+            };
         } catch (error) {
             console.error('Error al obtener los usuarios:', error);
             throw new Error('Error al obtener los usuarios');
@@ -95,7 +125,7 @@ export class userModel
     @param {nombre}: nombre del usuario
     @return {Object}: objeto con los datos del usuario creado
     */
-    static async createUser({rut, carrera,nombre})
+    static async createUser({rut,carrera,nombre})
     {
         if (!rut || !carrera || !nombre) {
             return { message: 'Faltan datos',
@@ -154,22 +184,47 @@ export class userModel
     /*
     Metodo para obtener todos los usuarios activos, este metodo esta probado y funciona
     */
-    static async getAllUsers()
+    static async getAllUsers({limit, lastkey})
     {
-        console.log("Entra ?")
         const params={
             TableName:'usuarios',
             FilterExpression: 'isActive = :isActive',
             ExpressionAttributeValues: {
                 ':isActive': {N: '1'},
             },
+            Limit: limit+1
         };
+        const params2={
+            TableName:'usuarios',
+            FilterExpression: 'isActive = :isActive',
+            ExpressionAttributeValues: {
+                ':isActive': {N: '1'},
+            }
+        };
+        if(lastkey)
+            {
+                params.ExclusiveStartKey = {id:{S: lastkey}};
+            }
+        let itemsTotal =null
+        let totalPage= null
         try{
+
             const result = await client.send(new ScanCommand(params));
-            console.log('DynamoDB result:', result); // Verifica el resultado
             if(!result.Items || result.Items === 0){
                 return[]
             }
+            if(lastkey === null || lastkey === undefined)
+                {
+                    const resultCount = await client.send(new ScanCommand(params2));
+                    itemsTotal= resultCount.Count;
+                    totalPage = 1
+                    if(limit && limit >0)
+                        {
+                            totalPage = Math.trunc(itemsTotal/limit)+1 ||1
+
+                        }
+                    
+                }
             const users = result.Items.map(items=>({
                 id:items.id.S,
                 nombre: items.nombre.S,
@@ -177,12 +232,71 @@ export class userModel
                 carrera:items.carrera.S,
                 isActive: parseInt(items.isActive.N )
             }))
-            return users 
+            return {
+                items:users,
+                totalPage,
+                itemsTotal,
+                lastkey: result.LastEvaluatedKey?.id?.S || null
+                
+            } 
         }catch(error){
             console.error('Error al obtener el usuario:', error);
-            throw new Error('Error al obtener el usuario');
+            throw new Error('Error al obtener el usuario'+error.message);
         }
     }
+    /*
+   
+    @
+    */
+    static async updateUser({rut, ...objeto})
+    {
+        const userShear = await this.getUserByRut(rut)
+        if(!userShear || userShear.length ===0){
+            return{message:'usuario no existe'};
+        }
+        if(Object.keys(objeto).length === 0)
+            {
+                return {message:'datos no enviados'}
+            }
+        const UpdateExpression_ =[]
+        const ExpressionAttributeValues = {}
+        const ExpressionAttributeNames = {}
+        if(objeto.rutB === rut || objeto.rutB )
+            {
+                const restultUser = await this.getUserByRut(objeto.rutB);
+                if(restultUser.length >0 || restultUser ){
+                    return {message: 'Rut a actualizar ya existente'}
+                }
+            }
+        
+        
+        for (const key in objeto)
+            {
+                UpdateExpression_.push(`#${key}= :${key}`);
+                ExpressionAttributeValues[`:${key}`]=objeto[key];
+                ExpressionAttributeNames[`#${key}`]=key;
+            }
+                
+        const params={
+            TableName:'usuarios',
+            Key:{id:userShear[0].id},
+            UpdateExpression:'SET ' +UpdateExpression_.join(', '),
+            ExpressionAttributeValues,
+            ExpressionAttributeNames,
+            ReturnValue: 'ALL_NEW'
+        };
+        try{
+            const result = await client.send(new UpdateCommand(params));
+            return {message: 'Usuario Actualizado con éxito',data: result.Attributes}
+        }
+        catch(error)
+        {
+            throw new Error('Error al actualizar el usuario '+ error.message);
+        }
+        
+
+    }
+    
     /*
     Metodo para actualizar el estado de un usuario, este metodo esta probado y funciona
     */
@@ -224,7 +338,7 @@ export class userModel
     @return{Object}: objeto con los datos del usuario encontrado
     */
     static async getUserByRut(rut)
-    {
+    {   
         const params = {
             TableName: 'usuarios',
             FilterExpression: 'rut = :rut',
@@ -243,9 +357,9 @@ export class userModel
             }))
             return users
         }catch(error){
-            console.error('Error al obtener el usuario:', error);
-            throw new Error('Error al obtener el usuario');
+            throw new Error('Error al obtener el usuario'+ error.message);
         }
     }
+    
 
 }

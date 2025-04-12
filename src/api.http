@@ -1,14 +1,13 @@
 ### obtener todos los datos
-GET http://localhost:3000/user/
-
-### obtener un dato
-GET http://localhost:3000/user/98001051-9
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
+GET http://localhost:3000/user?limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDQ5ODA2MSwiZXhwIjoxNzQ0NTAxNjYxfQ.hIzp71KmL5D4lWLc5Lvc4iqSG0hBDnUwdPNapb4_JmM
+###
+GET http://localhost:3000/user/20833991-5
 
 
 #### filtro
-http://localhost:3000/user/filtro?carrera=Contador%20auditor
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
+http://localhost:3000/user/filtro?limit=10&lastkey=90b54961-d533-4ce4-b5f0-a604988c9907
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDQ5ODA2MSwiZXhwIjoxNzQ0NTAxNjYxfQ.hIzp71KmL5D4lWLc5Lvc4iqSG0hBDnUwdPNapb4_JmM
 
 
 ###
@@ -38,6 +37,15 @@ Content-Type: application/json
 {
   "usuario": "admin1",
   "contrasenia":"admin123"
+}
+###
+PUT http://localhost:3000/user/actualizarUsuario/20833991-5
+Content-Type: application/json
+
+{
+  "nombre": "Francisco Concha ",
+  "carrera": "Ingeniería en Control de Gestión",
+  "rutB": "20833982-6 "
 }
 
 

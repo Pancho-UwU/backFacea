@@ -15,30 +15,45 @@ export class usuarioController {
     }
     static async getAllUsers(req, res) {
         try{
-            const users = await userModel.getAllUsers();
-            if (users.length === 0) {
+            const {limit, lastkey} = req.query
+            const {items, lastkey:nextkey,totalPage,itemsTotal} = await userModel.getAllUsers({
+                limit: parseInt(limit),
+                lastkey: lastkey ? decodeURIComponent(lastkey):undefined
+            });
+            if (!items.length === 0 || !items) {
                 return res.status(404).json({ message: "No hay usuarios disponibles" });
             }
-            return res.status(200).json(users);
+            return res.status(200).json({
+                
+                items,
+                lastkey:nextkey,
+                cantItems: itemsTotal,
+                cantPage:totalPage
+            });
         }
         catch(error){
-            return res.status(500).json({ message: "Error al obtener los usuarios" });
+            return res.status(500).json({ message: "Error al obtener los usuarios"+ error.message });
         }
     }
-    static async getAllUsersFilter(req, res) {
-        console.log('Query Parameters:', req.query); // Verifica si los parámetros llegan correctamente
-        const { carrera, nombre, isActive } = req.query;
-        console.log(carrera, nombre, isActive); // Verifica si los parámetros llegan correctamente
-        try {
-            const users = await userModel.getUserFilter({carrera, isActive, nombre });
     
-            if (!users || users.length === 0) {
+    static async getAllUsersFilter(req, res) {
+        const { carrera, nombre, isActive,limit, lastkey} = req.query;
+        try {
+            const {items,lastkey:nextkey,itemsTotal,contPage} = await userModel.getUserFilter({carrera, 
+                isActive, 
+                nombre, 
+                limit:parseInt(limit), 
+                lastkey: lastkey ? decodeURIComponent(lastkey): null });
+    
+            if (!items || items.length === 0) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
             return res.status(200).json({
-                users: users,
-                conts: users.length,
-                message: users.length>0?"Usuario encontrado ":"Usuario no encontrado"
+                items,
+                lastkey: nextkey,
+                conts: itemsTotal,
+                cantPage: contPage,
+                message: items.length>0?"Usuario encontrado ":"Usuario no encontrado"
 
             });
         } catch (error) {
@@ -72,6 +87,25 @@ export class usuarioController {
         } catch (error) {
             return res.status(500).json({ message: "Error al desactivar usuario", error:error.message });
         }
+    }
+    static async actualizarUsuario(req,res)
+    {
+        try{
+        const { rut } = req.params
+        const body = req.body
+        if(!rut){
+            return res.status(400).json({message:'EL rut es requerido'}) 
+        }
+        if(Object.keys(body).length===0){
+            return res.status(400).json({message:'Se debe de actualizar por lo menos un parametro'}) 
+        }
+
+        const result =await userModel.updateUser({rut,...body});
+        return res.status(200).json(result);
+        }catch(error){
+            return res.status(500).json({message:'error al actualizar ' + error.message})
+        }
+
     }
             
 }

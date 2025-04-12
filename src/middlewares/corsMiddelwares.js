@@ -1,8 +1,6 @@
 import cors from 'cors'
 export const corsMiddleware= ()=>cors({
     origin:(origin,callback)=>{
-        console.log(origin);
-        console.log(callback);
         const ACCEPTED_ORIGINS = [
             'http://localhost:8080',
             'http://localhost:3000',
@@ -15,6 +13,9 @@ export const corsMiddleware= ()=>cors({
             {
                 return callback(null,true)
             }
-        return callback(new error('Not allowed by CORS'))
-    }
+        return callback(new Error('Not allowed by CORS'))
+    },
+    credentials:true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 })

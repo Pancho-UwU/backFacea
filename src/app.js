@@ -9,6 +9,8 @@ const app = express();
 
 // Middlewares
 app.use(corsMiddleware());
+app.options(/.*/, corsMiddleware());
+
 app.use(morgan('dev'));
 app.use(express.json());
 seeder().then(() => {
@@ -19,5 +21,6 @@ seeder().then(() => {
 // Rutas
 app.use('/admin', adminRouter);
 app.use('/user', router);
+
 
 export default app;
