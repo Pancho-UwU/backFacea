@@ -28,7 +28,7 @@ export class userModel
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
                 rut: items.rut.S,
-                isActive: parseInt(items.isActive.S)
+                isActive: parseInt(items.isActive.N)
 
             }))
             return users[0]
@@ -79,7 +79,7 @@ export class userModel
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
                 rut: items.rut.S,
-                isActive: parseInt(items.isActive.S)
+                isActive: parseInt(items.isActive.N)
 
             }))
             return users;
@@ -175,7 +175,7 @@ export class userModel
                 nombre: items.nombre.S,
                 rut:items.rut.S,
                 carrera:items.carrera.S,
-                isActive: parseInt(items.isActive.S )
+                isActive: parseInt(items.isActive.N )
             }))
             return users 
         }catch(error){
@@ -239,7 +239,7 @@ export class userModel
                 rut: items.rut.S,
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
-                isActive: items.isActive.N
+                isActive: parseInt(items.isActive.N)
             }))
             return users
         }catch(error){

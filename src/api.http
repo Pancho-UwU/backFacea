@@ -2,7 +2,7 @@
 GET http://localhost:3000/user/
 
 ### obtener un dato
-GET http://localhost:3000/user/4578840-7
+GET http://localhost:3000/user/98001051-9
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
 
 
