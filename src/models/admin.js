@@ -1,4 +1,5 @@
-import { dynamoDBDoc } from "../dataBase/Database.js";
+import { ScanCommand } from '@aws-sdk/client-dynamodb';
+import client from '../dataBase/Database.js';
 import bcrypt from 'bcryptjs';
 
 export class adminModel
@@ -8,25 +9,31 @@ export class adminModel
                     TableName: "admins",
                     FilterExpression: 'usuario = :usuario',
                     ExpressionAttributeValues: {
-                        ':usuario': user,
+                        ':usuario': {S: user},
                     },
                 };
                 try{
-                    const result = await dynamoDBDoc.scan(params).promise();
+                    const result = await client.send(new ScanCommand(params));
                     if (result.Items.length === 0) {
                         throw new Error("Usuario no encontrado");
                     }
+                    const user = result.Items.map(items =>({
+                        id: items.id.S,
+                        nombre: items.nombre.S,
+                        usuario: items.usuario.S,
+                        contrasenia: items.contrasenia.S,
+                    }))
                     
-                    const admin = result.Items[0];
+                    const admin = user[0];
                     
-                    /*
+                    
                     const passwordMatch = await bcrypt.compare(password, admin.contrasenia);
                     
                     if (!passwordMatch) {
                         return { message: "Contraseña incorrecta",
                             inicio:false
                          };               }   
-                    */
+                    
                     return admin; // Retorna el super admin encontrado
                 }catch(error){
                     console.error('Error al obtener el  admin:', error);

@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { dynamoDBDoc } from "../dataBase/Database.js";
+import client from '../dataBase/Database.js';
 import {validatorRut}  from "../validators/validatorRut.js";
+import { PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import id from 'faker/lib/locales/id_ID/index.js';
 
 export class userModel
 {
@@ -14,13 +17,21 @@ export class userModel
             TableName:'usuarios',
             FilterExpression: 'rut = :rut AND isActive = :isActive',
             ExpressionAttributeValues: {
-                ':rut': rut,
-                ':isActive': 1,
+                ':rut': {S: rut},
+                ':isActive': {N: "1"},
             },
         };
         try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items[0] 
+            const result = await client.send(new ScanCommand(params));
+            const users = result.Items.map(items=>({
+                id: items.id.S,
+                nombre: items.nombre.S,
+                carrera: items.carrera.S,
+                rut: items.rut.S,
+                isActive: parseInt(items.isActive.S)
+
+            }))
+            return users[0]
         }catch(error){
             console.error('Error al obtener el usuario:', error);
             throw new Error('Error al obtener el usuario');
@@ -42,16 +53,15 @@ export class userModel
         if (nombre)
             {
                 filterExpressions.push('nombre = :nombre');
-                expressionAttributeValues[':nombre'] = nombre;
+                expressionAttributeValues[':nombre'] = {S: nombre};
             }
         if (carrera) {
             filterExpressions.push('carrera = :carrera');
-            expressionAttributeValues[':carrera'] = carrera;
+            expressionAttributeValues[':carrera'] = {S: carrera};
         }
         // Siempre añadimos isActive al filtro
         filterExpressions.push('isActive = :isActive');
-        expressionAttributeValues[':isActive'] = isActive !== undefined ? 
-        (typeof isActive === 'string' ? parseInt(isActive, 10) : isActive) : 1;
+        expressionAttributeValues[':isActive'] = isActive !== undefined ? { N: String(isActive) } : { N: "1" }; 
     
         // Si hay filtros, se agregan al scan
         if (filterExpressions.length > 0) {
@@ -63,8 +73,16 @@ export class userModel
     
         try {
             // Si no hay filtros, scan traerá todos los elementos
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items;
+            const result = await client.send(new ScanCommand(params));
+            const users = result.Items.map(items=>({
+                id: items.id.S,
+                nombre: items.nombre.S,
+                carrera: items.carrera.S,
+                rut: items.rut.S,
+                isActive: parseInt(items.isActive.S)
+
+            }))
+            return users;
         } catch (error) {
             console.error('Error al obtener los usuarios:', error);
             throw new Error('Error al obtener los usuarios');
@@ -108,18 +126,25 @@ export class userModel
         const params = {
             TableName: 'usuarios',
             Item: {
-                rut: rut,
-                carrera: carrera,
-                nombre: nombre,
-                isActive: 1,
-                id: uuidv4(),
+                'id': { S: uuidv4() },  // Asegúrate de que el tipo es 'S' (String)
+                'rut': { S: rut },  // 'rut' como cadena
+                'nombre': { S: nombre },  // 'nombre' como cadena
+                'carrera': { S: carrera },  // 'carrera' como cadena
+                'isActive': { N: "1" },
+                
             },
         };
     
         try {
-            await dynamoDBDoc.put(params).promise();
-            console.log('Usuario creado:', params.Item);
-            return params.Item;
+            await client.send(new PutItemCommand(params));
+            const user ={
+                id: params.Item.id.S,
+                rut: params.Item.rut.S,
+                nombre: params.Item.nombre.S,
+                carrera: params.Item.carrera.S,
+                isActive: params.Item.isActive.N
+            }
+            return user;
         } catch (error) {
             console.error('Error al crear el usuario:', error);
             throw new Error('Error al crear el usuario');
@@ -131,16 +156,28 @@ export class userModel
     */
     static async getAllUsers()
     {
+        console.log("Entra ?")
         const params={
             TableName:'usuarios',
             FilterExpression: 'isActive = :isActive',
             ExpressionAttributeValues: {
-                ':isActive': 1,
+                ':isActive': {N: '1'},
             },
         };
         try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
+            const result = await client.send(new ScanCommand(params));
+            console.log('DynamoDB result:', result); // Verifica el resultado
+            if(!result.Items || result.Items === 0){
+                return[]
+            }
+            const users = result.Items.map(items=>({
+                id:items.id.S,
+                nombre: items.nombre.S,
+                rut:items.rut.S,
+                carrera:items.carrera.S,
+                isActive: parseInt(items.isActive.S )
+            }))
+            return users 
         }catch(error){
             console.error('Error al obtener el usuario:', error);
             throw new Error('Error al obtener el usuario');
@@ -168,11 +205,12 @@ export class userModel
             ExpressionAttributeValues: {
                 ':isActive': userP[0].isActive == 0 ? 1 : 0, // Cambia el estado de isActive
             },
+            ReturnValue: 'UPDATED_NEW' 
         };
 
         try {
             console.log("holaa")
-            await dynamoDBDoc.update(params).promise();
+            await client.send(new UpdateCommand(params));
             console.log('Usuario desactivado:', rut);
             return { message: 'Usuario desactivado/activado' };
         } catch (error) {
@@ -191,12 +229,19 @@ export class userModel
             TableName: 'usuarios',
             FilterExpression: 'rut = :rut',
             ExpressionAttributeValues: {
-                ':rut': rut,
+                ':rut': {S: rut},
             },
         };
         try{
-            const result = await dynamoDBDoc.scan(params).promise();
-            return result.Items 
+            const result = await client.send(new ScanCommand(params));
+            const users = result.Items.map(items =>({
+                id: items.id.S,
+                rut: items.rut.S,
+                nombre: items.nombre.S,
+                carrera: items.carrera.S,
+                isActive: items.isActive.N
+            }))
+            return users
         }catch(error){
             console.error('Error al obtener el usuario:', error);
             throw new Error('Error al obtener el usuario');

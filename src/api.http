@@ -2,12 +2,12 @@
 GET http://localhost:3000/user/
 
 ### obtener un dato
-GET http://localhost:3000/user/71103596-9
+GET http://localhost:3000/user/4578840-7
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
 
 
 #### filtro
-http://localhost:3000/user/filtro?nombre=Austin%20Beier
+http://localhost:3000/user/filtro?carrera=Contador%20auditor
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDY4MCwiZXhwIjoxNzQ0MjU0MjgwfQ.pikHGyQnhGH-WTlsc-j4rZHxscv04HudfST5llPYNzo
 
 
@@ -19,7 +19,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 Content-Type: application/json
 
 {
-  "rut": "71103596-9",
+  "rut": "4578840-7",
   "nombre": "Austin Beier",
   "carrera": "Contador auditor"
 }
@@ -29,7 +29,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
 
 {
-  "rut": "21099622-0"
+  "rut": "4578840-7"
 }
 ### acutalizar usuario
 POST http://localhost:3000/admin/login

@@ -1,7 +1,9 @@
-import {dynamoDBDoc,dynamoDB} from './Database.js';
+import client from './Database.js';
 import faker from 'faker';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
+import { ScanCommand,CreateTableCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
+
 
 const generarUsuarios = async () => {
     const usuarios = [];
@@ -11,7 +13,7 @@ const generarUsuarios = async () => {
             rut: `${faker.datatype.number({ min: 10000000, max: 99999999 })}-${faker.datatype.number({ min: 0, max: 9 })}`,
             nombre: faker.name.findName(),
             carrera: faker.random.arrayElement(['Ingeniería en Control de Gestión', 'Contador auditor', 'Ingeniería comercial']),
-            isActive: 1,
+            isActive: "1",
         });
     }
     return usuarios;
@@ -26,48 +28,102 @@ const generarAdmins = async () => {
         nombre: 'Admin 1',
     }];
 };
-const generateSuperAdmin = async () => {
-    const passwordHash = await bcrypt.hash('superAdmin123', 10); // Hash the password
 
-    return [{
-        id: '1',
-        usuario: 'superadmin1',
-        contrasenia: passwordHash,
-        nombre: 'Super Admin 1',
-    }];
-}
-const isTablaVacia = async (tableName) => {
-    const params = {
-        TableName: tableName,
-        Limit: 1,
-    };
-    try {
-        const data = await dynamoDB.scan(params).promise();
-        return data.Items.length === 0; // Retorna true si la tabla está vacía
+const createTableSiNoExiste = async (tableName) => {
+    try{
+        await client.send(new DescribeTableCommand({ TableName: tableName }));
+
     }
-    catch (error) { 
-        console.log(`Error al verificar la tabla ${tableName}:`, error);
-        return false; // Si hay error, asumimos que no está vacía   
+    catch(err)
+    {
+        if(err.name="ResourceNotFoundException")
+            {
+                const params = {
+                    TableName: tableName,
+                    KeySchema: [
+                        { AttributeName: 'id', KeyType: 'HASH' }, // Partition key
+                    ],
+                    AttributeDefinitions: [
+                        { AttributeName: 'id', AttributeType: 'S' },
+                    ],
+                    BillingMode: 'PAY_PER_REQUEST',
+                };
+                await client.send(new CreateTableCommand(params));
+                console.log(`Tabla ${tableName} creada`);
+
+            }
+            else
+            {
+                console.error('Error al crear la tabla:', err);
+            }
+        
+    }
+}
+
+const isTablaVacia = async (tableName) => {
+    try{
+        await createTableSiNoExiste(tableName);
+        const params={
+            TableName: tableName,
+            Limit:1,
+        }
+        console.log("golaa")
+        const data = await client.send(new ScanCommand(params));
+        return data.Items.length === 0; // Si no hay items, la tabla está vacía
+    }
+    catch(err)
+    {
+        console.error('Error al verificar si la tabla está vacía:');
+        return false;
     }
 };
 const insertarEnTabla = async (tableName, items) => {
     // Si items es un objeto único, lo convertimos en array
     const itemsArray = Array.isArray(items) ? items : [items];
-    
-    for (const item of itemsArray) {
-        const params = {
-            TableName: tableName,
-            Item: item,
-        };
-        
-        try {
-            await dynamoDBDoc.put(params).promise();
-            console.log(`${tableName} insertado:`, item);
-        } catch (error) {
-            console.error(`Error al insertar en ${tableName}:`, error);
-            throw error;  // Propagamos el error
+    if(tableName === "usuarios")
+        {
+            for (const item of itemsArray) {
+                const params = {
+                    TableName: tableName,
+                    Item: 
+                        {
+                            'id': { S: item.id },  // Asegúrate de que el tipo es 'S' (String)
+                            'rut': { S: item.rut },  // 'rut' como cadena
+                            'nombre': { S: item.nombre },  // 'nombre' como cadena
+                            'carrera': { S: item.carrera },  // 'carrera' como cadena
+                            'isActive': { N: item.isActive },  // 'isActive' como número (debe ser un string)
+                        }
+                    }
+                    try {
+                        await client.send(new PutItemCommand(params));
+                        console.log(`Usuario con ID ${item.id} insertado correctamente`);
+                    } catch (error) {
+                        console.error("Error al insertar el usuario con", error);
+                    }
+                };
+                
+            }
+    if (tableName === "admins"){
+        for(const item of itemsArray){
+            const params2={
+                TableName: tableName,
+                Item:{
+                    'id': {S: item.id},
+                    'usuario': {S: item.usuario},
+                    'contrasenia': {S: item.contrasenia},
+                    'nombre': {S: item.nombre}
+                }
+            }
+            try{
+                await client.send(new PutItemCommand(params2))
+                console.log("Datos insertados")
+            }catch(err){
+                console.error("error al insertar datos")
+            }
         }
     }
+            
+    
 };
 
 
@@ -75,10 +131,9 @@ const insertarEnTabla = async (tableName, items) => {
 // Función principal para generar y agregar datos
 const generarSeeder = async () => {
     try{
-        const [usuariosVacia, adminsVacia,superAdminVacia] = await Promise.all([
+        const [usuariosVacia, adminsVacia] = await Promise.all([
             isTablaVacia('usuarios'),
             isTablaVacia('admins'),
-            isTablaVacia('superAdmins')
         ]);
         const promesas = [];
         if(usuariosVacia){
@@ -89,15 +144,10 @@ const generarSeeder = async () => {
         }
         if(adminsVacia){
             const admins = await generarAdmins();
+            console.log({message:"hola"})
             promesas.push(insertarEnTabla('admins', admins));   
         }else{
             console.log('error: la tabla admins no está vacía');
-        }
-        if(superAdminVacia){
-            const superAdmin = await generateSuperAdmin();
-            promesas.push(insertarEnTabla('superAdmins', superAdmin));
-        }else{
-            console.log('error: la tabla superAdmins no está vacía');
         }
         await Promise.all(promesas);
     }catch(error){

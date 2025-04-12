@@ -16,7 +16,7 @@ export class adminController {
             console.log(token, "token generado");
             return res.status(200).json({token, message: "Inicio de sesión exitoso", usuario: result.usuario });
         } catch (error) {
-            return res.status(401).json({ message: "Error logging in admin",error:error.message });
+            return res.status(401).json({ message: "Error en el login",error:error.message });
         }
     }
 }
