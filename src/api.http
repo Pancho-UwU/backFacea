@@ -1,13 +1,13 @@
 ### obtener todos los datos
-GET http://localhost:3000/user?limit=10
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDQ5ODA2MSwiZXhwIjoxNzQ0NTAxNjYxfQ.hIzp71KmL5D4lWLc5Lvc4iqSG0hBDnUwdPNapb4_JmM
+GET http://localhost:3000/user?limit=10&page=8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDUxMzA1NCwiZXhwIjoxNzQ0NTE2NjU0fQ.pfximNQB7-E1i6nlTrTGhyOv-mdNNJsYGTFw1IDmAOo
 ###
 GET http://localhost:3000/user/20833991-5
 
 
 #### filtro
-http://localhost:3000/user/filtro?limit=10&lastkey=90b54961-d533-4ce4-b5f0-a604988c9907
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDQ5ODA2MSwiZXhwIjoxNzQ0NTAxNjYxfQ.hIzp71KmL5D4lWLc5Lvc4iqSG0hBDnUwdPNapb4_JmM
+http://localhost:3000/user/filtro?limit=10&page=2&carrera=Ingeniería%20en%20Control%20de%20Gestión
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDUxMzA1NCwiZXhwIjoxNzQ0NTE2NjU0fQ.pfximNQB7-E1i6nlTrTGhyOv-mdNNJsYGTFw1IDmAOo
 
 
 ###

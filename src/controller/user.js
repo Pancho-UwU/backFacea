@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { userModel } from "../models/User.js";
 
 export class usuarioController {
@@ -15,10 +16,10 @@ export class usuarioController {
     }
     static async getAllUsers(req, res) {
         try{
-            const {limit, lastkey} = req.query
-            const {items, lastkey:nextkey,totalPage,itemsTotal} = await userModel.getAllUsers({
-                limit: parseInt(limit),
-                lastkey: lastkey ? decodeURIComponent(lastkey):undefined
+            const {limit,page } = req.query
+            const {items, itemsTotal,contPage} = await userModel.getAllUsers({
+                limit: Number.isNaN(limit)?10:limit,
+                page: Number.isNaN(page)? 0 :page,
             });
             if (!items.length === 0 || !items) {
                 return res.status(404).json({ message: "No hay usuarios disponibles" });
@@ -26,9 +27,8 @@ export class usuarioController {
             return res.status(200).json({
                 
                 items,
-                lastkey:nextkey,
                 cantItems: itemsTotal,
-                cantPage:totalPage
+                cantPage:contPage
             });
         }
         catch(error){
@@ -37,20 +37,20 @@ export class usuarioController {
     }
     
     static async getAllUsersFilter(req, res) {
-        const { carrera, nombre, isActive,limit, lastkey} = req.query;
+        const { carrera, nombre, isActive,limit, page} = req.query;
         try {
-            const {items,lastkey:nextkey,itemsTotal,contPage} = await userModel.getUserFilter({carrera, 
+            console.log("page"+page + "limit " + limit)
+            const {items,itemsTotal,contPage} = await userModel.getUserFilter({carrera, 
                 isActive, 
                 nombre, 
-                limit:parseInt(limit), 
-                lastkey: lastkey ? decodeURIComponent(lastkey): null });
-    
+                limit: Number.isNaN(limit)?10:limit, 
+                page: Number.isNaN(page) ? 0 : page
+            })
             if (!items || items.length === 0) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
             return res.status(200).json({
                 items,
-                lastkey: nextkey,
                 conts: itemsTotal,
                 cantPage: contPage,
                 message: items.length>0?"Usuario encontrado ":"Usuario no encontrado"
