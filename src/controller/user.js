@@ -1,11 +1,15 @@
 import { number } from "zod";
 import { userModel } from "../models/User.js";
+import { validatePartialUserCreate, validatePartialUserUpdate, validateUserCreate } from "../schema/userSchema.js";
 
 export class usuarioController {
     static async getUser(req, res) {
-        const { rut } = req.params;
+        const result = validatePartialUserCreate(req.params);
+        if (!result.success) {
+            return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
+        }
         try {
-            const user = await userModel.getUser({ rut });
+            const user = await userModel.getUser({ input: result.data });
             if (user.length === 0) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
@@ -39,7 +43,6 @@ export class usuarioController {
     static async getAllUsersFilter(req, res) {
         const { carrera, nombre, isActive,limit, page} = req.query;
         try {
-            console.log("page"+page + "limit " + limit)
             const {items,itemsTotal,contPage} = await userModel.getUserFilter({carrera, 
                 isActive, 
                 nombre, 
@@ -62,9 +65,14 @@ export class usuarioController {
         }
     }
     static async postUser(req, res) {
-        const { nombre, rut, carrera } = req.body;
+
+        const result = validateUserCreate(req.body);
+        if (!result.success) {
+            return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
+        }
         try {
-            const user = await userModel.createUser({ rut, nombre, carrera });
+            const user = await userModel.createUser({input:result.data}); 
+            console.log(user)
             if (!user) {
                 return res.status(404).json({ message: "Usuario no creado" });
             }
@@ -77,9 +85,13 @@ export class usuarioController {
         }
     }
     static async deactivateUser(req, res) {
-        const { rut } = req.body;
+        const result = validatePartialUserCreate(req.body);
+        console.log(result)
+        if (!result.success) {
+            return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
+        }
         try {
-            const user = await userModel.desactivUser({ rut });
+            const user = await userModel.desactivUser({ input: result.data });
             if (user.length === 0) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
@@ -91,17 +103,17 @@ export class usuarioController {
     static async actualizarUsuario(req,res)
     {
         try{
-        const { rut } = req.params
-        const body = req.body
-        if(!rut){
-            return res.status(400).json({message:'EL rut es requerido'}) 
-        }
-        if(Object.keys(body).length===0){
-            return res.status(400).json({message:'Se debe de actualizar por lo menos un parametro'}) 
-        }
-
-        const result =await userModel.updateUser({rut,...body});
-        return res.status(200).json(result);
+            const result1 = validatePartialUserCreate(req.params);
+            const result2= validatePartialUserUpdate(req.body);
+            
+            if (!result1.success) {
+                return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
+            }
+            if (!result2.success) {
+                return res.status(400).json({ message: "Error en la validacion", errors: result2.error.errors });
+            }
+            const result =await userModel.updateUser({input1:result1.data,input2:result2.data});
+            return res.status(200).json(result);
         }catch(error){
             return res.status(500).json({message:'error al actualizar ' + error.message})
         }

@@ -3,17 +3,17 @@ import client from '../dataBase/Database.js';
 import {validatorRut}  from "../validators/validatorRut.js";
 import { PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import id from 'faker/lib/locales/id_ID/index.js';
-import { object } from 'zod';
+
 
 export class userModel
 {
     /*
     Metodo para obtener un usuario por rut, este metodo esta probado y funciona
     */
-    static async getUser({rut})
+    static async getUser({input})
     {
-
+        const { rut } = input;
+        
         const params={
             TableName:'usuarios',
             FilterExpression: 'rut = :rut AND isActive = :isActive',
@@ -43,7 +43,7 @@ export class userModel
     Metodo para obtener usuarios filtrados, por carrera y si esta activo, tambien sirve para buscar por nombre.
     metodo probado busqueda .  
     */
-    static async getUserFilter({ carrera, isActive, nombre,limit =10, page= 0 }) {
+    static async getUserFilter({ carrera, isActive, nombre,limit = 10, page = 0 }) {
         const params = {
             TableName: 'usuarios',
         };
@@ -111,13 +111,10 @@ export class userModel
     @param {nombre}: nombre del usuario
     @return {Object}: objeto con los datos del usuario creado
     */
-    static async createUser({rut,carrera,nombre})
+    static async createUser({input})
     {
-        if (!rut || !carrera || !nombre) {
-            return { message: 'Faltan datos',
-                create: false,
-             };
-        }
+        const { rut, nombre, carrera } = input;
+
 
         if (!validatorRut.validarRutChileno(rut)) {
             console.log('El rut no es valido', rut); 
@@ -125,32 +122,27 @@ export class userModel
                 create: false,
              };
         }
-
+                
         // Verificar si el usuario ya existe
-        const existingUser = await this.getUser( {rut} );
-        if (existingUser) {
+        const existingUser = await this.getUserByRut(rut);
+        if (existingUser.length !== 0 ) {
             return { message: 'Usuario ya existe',
                 create: false,
              };
         }
-        const carrerasValidas = ['Ingeniería en Información y Control de Gestión', 'Contador auditor', 'Ingeniería comercial'];
-        if(!carrerasValidas.includes(carrera)){
-            return { message: 'La carrera no es válida',
-                create: false,
-            }
-        }
+        console.log(2);
+
         const params = {
             TableName: 'usuarios',
             Item: {
-                'id': { S: uuidv4() },  // Asegúrate de que el tipo es 'S' (String)
-                'rut': { S: rut },  // 'rut' como cadena
-                'nombre': { S: nombre },  // 'nombre' como cadena
-                'carrera': { S: carrera },  // 'carrera' como cadena
+                'id': { S: uuidv4() },  
+                'rut': { S: rut },  
+                'nombre': { S: nombre }, 
+                'carrera': { S: carrera },
                 'isActive': { N: "1" },
                 
             },
         };
-    
         try {
             await client.send(new PutItemCommand(params));
             const user ={
@@ -218,8 +210,11 @@ export class userModel
    
     @
     */
-    static async updateUser({rut, ...objeto})
+    static async updateUser({input1, input2})
     {
+        const { rut } = input1;
+        const objeto = input2;
+        
         const userShear = await this.getUserByRut(rut)
         if(!userShear || userShear.length ===0){
             return{message:'usuario no existe'};
@@ -270,12 +265,10 @@ export class userModel
     /*
     Metodo para actualizar el estado de un usuario, este metodo esta probado y funciona
     */
-    static async desactivUser({rut}){
+    static async desactivUser({input}){
 
-        if (!rut) {
-            return { message: 'Faltan datos' };
-        }
-        
+        const { rut } = input;
+        console.log(rut)
         const userP = await this.getUserByRut(rut);
         if (!userP) {
             return { message: 'Usuario no encontrado' };
@@ -309,6 +302,7 @@ export class userModel
     */
     static async getUserByRut(rut)
     {   
+        console.log(rut)
         const params = {
             TableName: 'usuarios',
             FilterExpression: 'rut = :rut',
@@ -325,6 +319,7 @@ export class userModel
                 carrera: items.carrera.S,
                 isActive: parseInt(items.isActive.N)
             }))
+            console.log(users)
             return users
         }catch(error){
             throw new Error('Error al obtener el usuario'+ error.message);

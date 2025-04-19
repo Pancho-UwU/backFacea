@@ -18,7 +18,6 @@ const generarUsuarios = async () => {
     }
     return usuarios;
 };
-
 const generarAdmins = async () => {
     const passwordHash = await bcrypt.hash('admin123', 10); // Hash the password
     return [{
@@ -28,7 +27,6 @@ const generarAdmins = async () => {
         nombre: 'Admin 1',
     }];
 };
-
 const createTableSiNoExiste = async (tableName) => {
     try{
         await client.send(new DescribeTableCommand({ TableName: tableName }));
@@ -59,7 +57,6 @@ const createTableSiNoExiste = async (tableName) => {
         
     }
 }
-
 const isTablaVacia = async (tableName) => {
     try{
         await createTableSiNoExiste(tableName);
@@ -125,9 +122,6 @@ const insertarEnTabla = async (tableName, items) => {
             
     
 };
-
-
-
 // Función principal para generar y agregar datos
 const generarSeeder = async () => {
     try{

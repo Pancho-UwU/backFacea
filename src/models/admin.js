@@ -4,12 +4,13 @@ import bcrypt from 'bcryptjs';
 
 export class adminModel
 {
-    static async login(user, password) {
+    static async login({input}) {
+        const { usuario, contrasenia } = input;
         const params = {
                     TableName: "admins",
                     FilterExpression: 'usuario = :usuario',
                     ExpressionAttributeValues: {
-                        ':usuario': {S: user},
+                        ':usuario': {S: usuario},
                     },
                 };
                 try{
@@ -22,12 +23,11 @@ export class adminModel
                         nombre: items.nombre.S,
                         usuario: items.usuario.S,
                         contrasenia: items.contrasenia.S,
-                    }))
+                    })) 
                     
                     const admin = user[0];
                     
-                    
-                    const passwordMatch = await bcrypt.compare(password, admin.contrasenia);
+                    const passwordMatch = await bcrypt.compare(contrasenia, admin.contrasenia);
                     
                     if (!passwordMatch) {
                         return { message: "Contraseña incorrecta",

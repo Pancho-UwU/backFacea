@@ -14,18 +14,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 
 ### Crear usuario 
 POST http://localhost:3000/user/crear
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MDgxOCwiZXhwIjoxNzQ0MjU0NDE4fQ.4KDUjm7hKSKoElmDYonAlq_uHxJzaZg98L0xbDFoPjo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTAzMDE1OSwiZXhwIjoxNzQ1MDMzNzU5fQ.KhUxaCuDvfToLbduzDOVKnDchIp11E-a7QUqGeQWJhY
 Content-Type: application/json
 
 {
-  "rut": "4578840-7",
-  "nombre": "Austin Beier",
+  "rut": "19444496-6",
+  "nombre": "Carlos Concha",
   "carrera": "Contador auditor"
 }
 ### Actualizar usuario
 PUT http://localhost:3000/user/actualizar
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDI1MTU3NywiZXhwIjoxNzQ0MjU1MTc3fQ.uVsehYILygmNJUqCPj3mwrtVzj1SBKURbsymop-ubq4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTAzMTQzNiwiZXhwIjoxNzQ1MDM1MDM2fQ.vJ0o3NoIqK1r3gj5DYV21ytptDujaa5qPeGkmSmptqs
 
 {
   "rut": "4578840-7"
@@ -40,12 +40,13 @@ Content-Type: application/json
 }
 ###
 PUT http://localhost:3000/user/actualizarUsuario/20833991-5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTAyNjQ5NywiZXhwIjoxNzQ1MDMwMDk3fQ.NI9UgtY6BN91VLngaODtoOYzJncUnJWqLyDFqjTKS14
 Content-Type: application/json
 
 {
   "nombre": "Francisco Concha ",
   "carrera": "Ingeniería en Control de Gestión",
-  "rutB": "20833982-6 "
+  "rutB": "20833982-6"
 }
 
 
