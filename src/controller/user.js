@@ -1,6 +1,7 @@
 import { number } from "zod";
 import { userModel } from "../models/User.js";
 import { validatePartialUserCreate, validatePartialUserUpdate, validateUserCreate } from "../schema/userSchema.js";
+import e from "express";
 
 export class usuarioController {
     static async getUser(req, res) {
@@ -10,12 +11,12 @@ export class usuarioController {
         }
         try {
             const user = await userModel.getUser({ input: result.data });
-            if (user.length === 0) {
+            if (!user||user.length === 0) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
             }
             return res.status(200).json(user);
         } catch (error) {
-            return res.status(500).json({ message: "Error al obtener el usuario en get usre" });
+            return res.status(500).json({ message: "Error al obtener el usuario en get usre"+ error.message });
         }
     }
     static async getAllUsers(req, res) {

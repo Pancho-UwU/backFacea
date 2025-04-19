@@ -1,0 +1,45 @@
+service: apibackendfacea
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: sa-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchGetItem
+        - dynamodb:BatchWriteItem
+      Resource: 
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/usuarios"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/usuarios/index/*"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/admins"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/admins/index/*"
+functions:
+  app:
+    handler: handler.handler
+    events:
+      - http:
+          path: '/{proxy+}'
+          method: ANY
+          cors: true
+
+
+
+plugins:
+  - serverless-offline
+
+package:
+  exclude:
+    - .git/**
+  include:
+    - src/**
+    - package.json
+    - package-lock.json
+    - handler.js
+    - node_modules/**

@@ -1,9 +1,15 @@
 ### obtener todos los datos
-GET http://localhost:3000/user?limit=10&page=8
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDUxMzA1NCwiZXhwIjoxNzQ0NTE2NjU0fQ.pfximNQB7-E1i6nlTrTGhyOv-mdNNJsYGTFw1IDmAOo
-###
-GET http://localhost:3000/user/20833991-5
+GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTA0NTU5MiwiZXhwIjoxNzQ1MDQ5MTkyfQ.sPVWNxvxf7OxgNZVXHRSrjyDkSVOyVLe4-9bFRg4sMs
 
+###
+
+GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/19444496-6
+
+###
+get http://localhost:3002/dev/user/19444496-6
+###
+GET https://f34nj06gui.execute-api.sa-east-1.amazonaws.com/dev/user/
 
 #### filtro
 http://localhost:3000/user/filtro?limit=10&page=2&carrera=Ingeniería%20en%20Control%20de%20Gestión
@@ -31,7 +37,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
   "rut": "4578840-7"
 }
 ### acutalizar usuario
-POST http://localhost:3000/admin/login
+POST https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/admin/login
 Content-Type: application/json
 
 {

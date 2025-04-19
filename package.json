@@ -14,6 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.788.0",
     "@aws-sdk/lib-dynamodb": "^3.788.0",
+    "aws-serverless-express": "^3.4.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
@@ -26,5 +27,8 @@
     "morgan": "1.10.0",
     "uuid": "^11.1.0",
     "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "serverless-offline": "^14.4.0"
   }
 }

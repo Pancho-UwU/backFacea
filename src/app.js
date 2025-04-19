@@ -10,6 +10,7 @@ const app = express();
 // Middlewares
 app.use(corsMiddleware());
 app.options(/.*/, corsMiddleware());
+app.set('trust proxy', true);
 
 app.use(morgan('dev'));
 app.use(express.json());

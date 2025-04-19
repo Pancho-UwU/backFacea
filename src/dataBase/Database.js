@@ -1,6 +1,4 @@
-import cli from "@angular/cli";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import dotenv from 'dotenv';
 dotenv.config();
 // Configurar DynamoDB Local
