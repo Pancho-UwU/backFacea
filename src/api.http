@@ -1,19 +1,20 @@
 ### obtener todos los datos
 GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTA0NTU5MiwiZXhwIjoxNzQ1MDQ5MTkyfQ.sPVWNxvxf7OxgNZVXHRSrjyDkSVOyVLe4-9bFRg4sMs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTYxODEwNSwiZXhwIjoxNzQ1NjIxNzA1fQ._1gSHcari51BR3viL8spiyc7IdnGE16ld9yf4KtFPLQ
 
 ###
 
-GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/19444496-6
 
+GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/19444496-6
+    
 ###
 get http://localhost:3002/dev/user/19444496-6
 ###
 GET https://f34nj06gui.execute-api.sa-east-1.amazonaws.com/dev/user/
 
 #### filtro
-http://localhost:3000/user/filtro?limit=10&page=2&carrera=Ingeniería%20en%20Control%20de%20Gestión
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NDUxMzA1NCwiZXhwIjoxNzQ0NTE2NjU0fQ.pfximNQB7-E1i6nlTrTGhyOv-mdNNJsYGTFw1IDmAOo
+http://localhost:3000/user/filtro?limit=10&page=0&carrera=Ingeniería%20en%20Control%20de%20Gestión&nombre=Francisco%20Concha&rut=20833991-5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NDAyOSwiZXhwIjoxNzQ1NjQ3NjI5fQ.XTEsPuV91lub67aIk5SJdajkPkRZoXcc7fKp7eKpS1o
 
 
 ###
@@ -29,12 +30,12 @@ Content-Type: application/json
   "carrera": "Contador auditor"
 }
 ### Actualizar usuario
-PUT http://localhost:3000/user/actualizar
+PUT https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/actualizar
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTAzMTQzNiwiZXhwIjoxNzQ1MDM1MDM2fQ.vJ0o3NoIqK1r3gj5DYV21ytptDujaa5qPeGkmSmptqs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTYxODEwNSwiZXhwIjoxNzQ1NjIxNzA1fQ._1gSHcari51BR3viL8spiyc7IdnGE16ld9yf4KtFPLQ
 
 {
-  "rut": "4578840-7"
+  "rut": "98001051-9"
 }
 ### acutalizar usuario
 POST https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/admin/login
@@ -52,7 +53,27 @@ Content-Type: application/json
 {
   "nombre": "Francisco Concha ",
   "carrera": "Ingeniería en Control de Gestión",
-  "rutB": "20833982-6"
+  "rutB": "45257401-2"
 }
 
+####
+post http://localhost:3000/admin/login
+Content-Type: application/json
+  
+{
+  "usuario": "admin1",
+  "contrasenia":"admin123"
+}
 
+### 
+get http://localhost:3000/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTYzNjczOSwiZXhwIjoxNzQ1NjQwMzM5fQ.IhbbdoG3WEUvniFXaiVLSUfvmjv5AW8LSJEwXn4e9eQ
+
+### 
+put http://localhost:3000/user/actualizar
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTYxODQ3OCwiZXhwIjoxNzQ1NjIyMDc4fQ.8iYUre-Bx5Q0MI2iB-tByq3c-CWKACZDrw5IhSGpmjM
+
+{
+  "rut": "98001051-9"
+}

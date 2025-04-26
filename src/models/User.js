@@ -47,35 +47,11 @@ export class userModel
         const params = {
             TableName: 'usuarios',
         };
-        
-        
-        const filterExpressions = [];
-        const expressionAttributeValues = {};
-        
-        if (nombre)
-            {
-                filterExpressions.push('contains(nombre,:nombre)');
-                expressionAttributeValues[':nombre'] = {S: nombre};
-            }
-        if (carrera) {
-            filterExpressions.push('carrera = :carrera');
-            expressionAttributeValues[':carrera'] = {S: carrera};
-        }
-        // Siempre añadimos isActive al filtro
-        filterExpressions.push('isActive = :isActive');
-        expressionAttributeValues[':isActive'] = isActive !== undefined ? { N: String(isActive) } : { N: "1" }; 
-    
-        // Si hay filtros, se agregan al scan
-        if (filterExpressions.length > 0) {
-            params.FilterExpression = filterExpressions.join(' AND ');
-            params.ExpressionAttributeValues = expressionAttributeValues;
-        }
-        
-        
+  
         try {
             // Si no hay filtros, scan traerá todos los elementos
             const result = await client.send(new ScanCommand(params))
-            const users = result.Items.map(items=>({
+            let users = result.Items.map(items=>({
                 id: items.id.S,
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
@@ -83,15 +59,39 @@ export class userModel
                 isActive: parseInt(items.isActive.N)
 
             }))
+
+            if (nombre) {
+               
+                users = users.filter(user => {
+                    const userNameLower = user.nombre.toLowerCase().trim();
+                    const searchTermLower = nombre.toLowerCase().trim();
+                    const matches = userNameLower.includes(searchTermLower);
+                    return matches;
+                });
+            }
+
+            if(carrera){
+                users = users.filter(user => {
+                    const userCarreraLower = user.carrera.toLowerCase().trim();
+                    const searchTermLower = carrera.toLowerCase().trim();
+                    const matches = userCarreraLower.includes(searchTermLower);
+                    return matches;
+                });
+            }
+            if(isActive === undefined){
+                users = users.filter(user => user.isActive === 1);
+            }
+            else{
+                users = users.filter(user => user.isActive === parseInt(isActive));
+            }
             let inicio = page*limit
             let fin = parseInt(inicio)+parseInt(limit)
-           
-            if(inicio >=users.length){
+            if(users.length === 0){
                 return{
                     items:[],
                     itemsTotal: users.length,
                     contPage:  Math.ceil(users.length / limit),
-                    message:"Página fuera del rango"
+                    message:"no hay usuarios"
                 }
             }
             const usersReturn =users.slice(inicio,fin)
@@ -100,7 +100,7 @@ export class userModel
                 contPage: Math.ceil(users.length / limit),
             };
         } catch (error) {
-            console.error('Error al obtener los usuarios:', error);
+            console.error('Error al obtener los usuarios:'+ error.message);
             throw new Error('Error al obtener los usuarios');
         }
     }
@@ -229,8 +229,8 @@ export class userModel
         if(objeto.rutB === rut || objeto.rutB )
             {
                 const restultUser = await this.getUserByRut(objeto.rutB);
-                if(restultUser.length >0 || restultUser ){
-                    return {message: 'Rut a actualizar ya existente'}
+                if(restultUser.length >0 || !restultUser ){
+                    return {message: 'Rut a actualizar ya existente'+ restultUser.length}
                 }
             }
         
@@ -268,7 +268,6 @@ export class userModel
     static async desactivUser({input}){
 
         const { rut } = input;
-        console.log(rut)
         const userP = await this.getUserByRut(rut);
         if (!userP) {
             return { message: 'Usuario no encontrado' };
@@ -280,7 +279,7 @@ export class userModel
             Key: { id: userP[0].id},
             UpdateExpression: 'set isActive = :isActive',
             ExpressionAttributeValues: {
-                ':isActive': userP[0].isActive == 0 ? 1 : 0, // Cambia el estado de isActive
+                ':isActive': userP[0].isActive == 0 ? '1' : '0', // Cambia el estado de isActive
             },
             ReturnValue: 'UPDATED_NEW' 
         };
@@ -292,7 +291,7 @@ export class userModel
             return { message: 'Usuario desactivado/activado' };
         } catch (error) {
             console.error('Error al desactivar el usuario:', error);
-            throw new Error('Error al desactivar el usuario PLSSS');
+            throw new Error('Error al desactivar el usuario PLSSS'+error.message);
         }
     }
     /*
@@ -302,7 +301,6 @@ export class userModel
     */
     static async getUserByRut(rut)
     {   
-        console.log(rut)
         const params = {
             TableName: 'usuarios',
             FilterExpression: 'rut = :rut',
@@ -319,7 +317,6 @@ export class userModel
                 carrera: items.carrera.S,
                 isActive: parseInt(items.isActive.N)
             }))
-            console.log(users)
             return users
         }catch(error){
             throw new Error('Error al obtener el usuario'+ error.message);
@@ -328,3 +325,4 @@ export class userModel
     
 
 }
+

@@ -44,14 +44,14 @@ export class usuarioController {
     static async getAllUsersFilter(req, res) {
         const { carrera, nombre, isActive,limit, page} = req.query;
         try {
-            const {items,itemsTotal,contPage} = await userModel.getUserFilter({carrera, 
+            const {items,itemsTotal,contPage, message} = await userModel.getUserFilter({carrera, 
                 isActive, 
                 nombre, 
                 limit: Number.isNaN(limit)?10:limit, 
                 page: Number.isNaN(page) ? 0 : page
             })
             if (!items || items.length === 0) {
-                return res.status(404).json({ message: "Usuario no encontrado" });
+                return res.status(404).json({ message: "Usuario no encontrado asfasf "+ items.length });
             }
             return res.status(200).json({
                 items,
@@ -67,9 +67,10 @@ export class usuarioController {
     }
     static async postUser(req, res) {
 
+        console.log(req.body)
         const result = validateUserCreate(req.body);
         if (!result.success) {
-            return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
+            return res.status(400).json({ message: "Error en la validacion estaa", errors: result.error.errors });
         }
         try {
             const user = await userModel.createUser({input:result.data}); 
@@ -87,7 +88,6 @@ export class usuarioController {
     }
     static async deactivateUser(req, res) {
         const result = validatePartialUserCreate(req.body);
-        console.log(result)
         if (!result.success) {
             return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
         }
