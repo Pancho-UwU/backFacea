@@ -5,7 +5,9 @@ export const corsMiddleware= ()=>cors({
             'http://localhost:8080',
             'http://localhost:3000',
             'http://localhost:4200',
-            'http://192.168.7.43:4200'
+            'http://192.168.7.43:4200',
+            'https://tarjetafacea.cl', // Asegúrate de incluir "https://" si tu dominio lo usa
+            'https://dpo5l9etbbt61.cloudfront.net'
         ]
         if(ACCEPTED_ORIGINS.includes(origin)){
             return callback(null,true)

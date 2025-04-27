@@ -40,7 +40,6 @@ export class usuarioController {
             return res.status(500).json({ message: "Error al obtener los usuarios"+ error.message });
         }
     }
-    
     static async getAllUsersFilter(req, res) {
         const { carrera, nombre, isActive,limit, page} = req.query;
         try {
@@ -120,5 +119,16 @@ export class usuarioController {
         }
 
     }
-            
+    static async getCompletUser(req,res){
+        try{
+            const result = await userModel.getAllUsersComplete();
+            if (!result || result.length === 0) {
+                return res.status(404).json({ message: "No hay usuarios disponibles" });
+            }
+            return res.status(200).json(result);
+
+        }catch(error){
+            return res.status(500).json({ message: "Error al obtener los usuarios"+ error.message });
+        }
+    }
 }

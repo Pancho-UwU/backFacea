@@ -206,6 +206,41 @@ export class userModel
             throw new Error('Error al obtener el usuario'+error.message);
         }
     }
+
+    static async getAllUsersComplete()
+    {
+        const params={
+            TableName:'usuarios',
+            FilterExpression: 'isActive = :isActive',
+            ExpressionAttributeValues: {
+                ':isActive': {N: '1'},
+            },
+        };
+        
+        try{
+
+            const result = await client.send(new ScanCommand(params));
+            if(!result.Items || result.Items === 0){
+                return[]
+            }
+            const users = result.Items.map(items=>({
+                id:items.id.S,
+                nombre: items.nombre.S,
+                rut:items.rut.S,
+                carrera:items.carrera.S,
+                isActive: parseInt(items.isActive.N )
+            }))
+            
+            return users;
+            
+        }catch(error){
+            console.error('Error al obtener el usuario:', error);
+            throw new Error('Error al obtener el usuario'+error.message);
+        }
+    }
+
+
+
     /*
    
     @

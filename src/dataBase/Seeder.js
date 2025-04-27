@@ -12,7 +12,7 @@ const generarUsuarios = async () => {
             id: uuidv4(),
             rut: `${faker.datatype.number({ min: 10000000, max: 99999999 })}-${faker.datatype.number({ min: 0, max: 9 })}`,
             nombre: faker.name.findName(),
-            carrera: faker.random.arrayElement(['Ingeniería en Control de Gestión', 'Contador auditor', 'Ingeniería comercial']),
+            carrera: faker.random.arrayElement(['Ingeniería en Información y Control de Gestión', 'Contador auditor', 'Ingeniería comercial']),
             isActive: "1",
         });
     }
@@ -64,7 +64,6 @@ const isTablaVacia = async (tableName) => {
             TableName: tableName,
             Limit:1,
         }
-        console.log("golaa")
         const data = await client.send(new ScanCommand(params));
         return data.Items.length === 0; // Si no hay items, la tabla está vacía
     }

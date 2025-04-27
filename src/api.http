@@ -13,7 +13,7 @@ get http://localhost:3002/dev/user/19444496-6
 GET https://f34nj06gui.execute-api.sa-east-1.amazonaws.com/dev/user/
 
 #### filtro
-http://localhost:3000/user/filtro?limit=10&page=0&carrera=Ingeniería%20en%20Control%20de%20Gestión&nombre=Francisco%20Concha&rut=20833991-5
+http://localhost:3000/user/filtro?limit=10&page=0&carrera=Ingeniería%20en%20Control%20de%20Gestión
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NDAyOSwiZXhwIjoxNzQ1NjQ3NjI5fQ.XTEsPuV91lub67aIk5SJdajkPkRZoXcc7fKp7eKpS1o
 
 
@@ -77,3 +77,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 {
   "rut": "98001051-9"
 }
+
+###
+get http://localhost:3000/user/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NzQ3MSwiZXhwIjoxNzQ1NjUxMDcxfQ.K-iK34kQGHuC9dh6wnqAsGQhtNJ_iDdLC1gk8U6z4vQ
+
+###
+get http://localhost:3000/user/verificarJWT
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NzQ3MSwiZXhwIjoxNzQ1NjUxMDcxfQ.K-iK34kQGHuC9dh6wnqAsGQhtNJ_iDdLC1gk8U6z4vQ
