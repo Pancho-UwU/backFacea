@@ -1,7 +1,6 @@
 import { number } from "zod";
 import { userModel } from "../models/User.js";
 import { validatePartialUserCreate, validatePartialUserUpdate, validateUserCreate } from "../schema/userSchema.js";
-import e from "express";
 
 export class usuarioController {
     static async getUser(req, res) {
@@ -10,9 +9,9 @@ export class usuarioController {
             return res.status(400).json({ message: "Error en la validacion", errors: result.error.errors });
         }
         try {
-            const user = await userModel.getUser({ input: result.data });
-            if (!user||user.length === 0) {
-                return res.status(404).json({ message: "Usuario no encontrado" });
+            const {user,message} = await userModel.getUser({ input: result.data });
+            if (!user||user.length === 0||message) {
+                return res.status(404).json({ message: message });
             }
             return res.status(200).json(user);
         } catch (error) {

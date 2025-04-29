@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import client from '../dataBase/Database.js';
 import {validatorRut}  from "../validators/validatorRut.js";
-import { PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { GetItemCommand, PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 
@@ -15,24 +15,26 @@ export class userModel
         const { rut } = input;
         
         const params={
-            TableName:'usuarios',
-            FilterExpression: 'rut = :rut AND isActive = :isActive',
-            ExpressionAttributeValues: {
-                ':rut': {S: rut},
-                ':isActive': {S: "1"},
-            },
+            TableName:'usuarios2',
+            Key:{
+                rut:{S: rut}
+            }
         };
         try{
-            const result = await client.send(new ScanCommand(params));
-            const users = result.Items.map(items=>({
-                id: items.id.S,
-                nombre: items.nombre.S,
-                carrera: items.carrera.S,
-                rut: items.rut.S,
-                isActive: items.isActive.S
-
-            }))
-            return users[0]
+            const result = await client.send(new GetItemCommand(params));
+            if(result.Item && result.Item.isActive.S === "1"&& result.Item.isActive){
+                return user = {
+                    id: result.Item.id.S,
+                    nombre: result.Item.nombre.S,
+                    rut: result.Item.rut.S,
+                    carrera: result.Item.carrera.S,
+                    isActive: result.Item.isActive.S
+                };
+            }
+                else{
+                    return { message: 'Usuario no encontrado o inactivo' };
+                }
+            
         }catch(error){
             console.error('Error al obtener el usuario:', error);
             throw new Error('Error al obtener el usuario');
@@ -117,7 +119,6 @@ export class userModel
 
 
         if (!validatorRut.validarRutChileno(rut)) {
-            console.log('El rut no es valido', rut); 
             return { message: 'El rut no es valido',
                 create: false,
              };
@@ -134,8 +135,8 @@ export class userModel
         const params = {
             TableName: 'usuarios',
             Item: {
-                'id': { S: uuidv4() },  
                 'rut': { S: rut },  
+                'id': { S: uuidv4() },  
                 'nombre': { S: nombre }, 
                 'carrera': { S: carrera },
                 'isActive': { S: "1" },
@@ -274,18 +275,7 @@ export class userModel
             }
         }
         
-        // Preparar expresión de actualización
-        const UpdateExpression_ = [];
-        const ExpressionAttributeValues = {};
-        const ExpressionAttributeNames = {};
-        
-        // Si vamos a actualizar el RUT, asegurarnos de incluirlo correctamente
-        if(nuevoRut) {
-            // Si rutB es para validación pero el campo real es 'rut', hacemos esta conversión
-            UpdateExpression_.push(`#rut = :rut`);
-            ExpressionAttributeValues[`:rut`] = nuevoRut;
-            ExpressionAttributeNames[`#rut`] = 'rut'; // Asegúrate que coincida con el nombre real en la BD
-        }
+       
         
         // Procesar resto de campos (excluyendo rutB que ya procesamos)
         for (const key in objeto) {
@@ -293,6 +283,13 @@ export class userModel
                 UpdateExpression_.push(`#${key} = :${key}`);
                 ExpressionAttributeValues[`:${key}`] = objeto[key];
                 ExpressionAttributeNames[`#${key}`] = key;
+            }
+        }
+        try{
+            let result ;
+            if(nuevoRut){
+                
+                
             }
         }
         
@@ -305,7 +302,7 @@ export class userModel
             ExpressionAttributeNames,
             ReturnValues: 'ALL_NEW'
         };
-        
+        /*
         try {
             console.log('Parámetros de actualización:', JSON.stringify(params, null, 2));
             const result = await client.send(new UpdateCommand(params));
@@ -313,6 +310,7 @@ export class userModel
         } catch(error) {
             throw new Error('Error al actualizar el usuario: ' + error.message);
         }
+            */
     }
     
     /*
@@ -355,20 +353,19 @@ export class userModel
     {   
         const params = {
             TableName: 'usuarios',
-            FilterExpression: 'rut = :rut',
-            ExpressionAttributeValues: {
-                ':rut': {S: rut},
-            },
+            Key:{
+                rut:{S: rut}
+            }
         };
         try{
             const result = await client.send(new ScanCommand(params));
-            const users = result.Items.map(items =>({
-                id: items.id.S,
-                rut: items.rut.S,
-                nombre: items.nombre.S,
-                carrera: items.carrera.S,
-                isActive: items.isActive.S
-            }))
+            const users = {
+                id: result.Item.id.S,
+                nombre: result.Item.nombre.S,
+                rut: result.Item.rut.S,
+                carrera: result.Item.carrera.S,
+                isActive: result.Item.isActive.S
+            }
             return users
         }catch(error){
             throw new Error('Error al obtener el usuario'+ error.message);

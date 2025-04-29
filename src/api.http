@@ -79,8 +79,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 }
 
 ###
-get http://localhost:3000/user/21447600-2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTc4NTI2OSwiZXhwIjoxNzQ1Nzg4ODY5fQ.uS4oZ13Q1T2dzyqncRxs5GyrrZXnV2x3LOv8Rt4xVPg
+get http://localhost:3000/user/20833991-4
 
 ###
 get http://localhost:3000/user/verificarJWT
