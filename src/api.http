@@ -8,13 +8,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 GET https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/user/19444496-6
     
 ###
-get http://localhost:3002/dev/user/19444496-6
+get http://localhost:3002/dev/user/21447600-2
 ###
 GET https://f34nj06gui.execute-api.sa-east-1.amazonaws.com/dev/user/
 
 #### filtro
-http://localhost:3000/user/filtro?limit=10&page=0&carrera=Ingeniería%20en%20Control%20de%20Gestión
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NDAyOSwiZXhwIjoxNzQ1NjQ3NjI5fQ.XTEsPuV91lub67aIk5SJdajkPkRZoXcc7fKp7eKpS1o
+http://localhost:3000/user/filtro?limit=10&page=0&nombre=fra
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTc4MTIwMSwiZXhwIjoxNzQ1Nzg0ODAxfQ.876NJYchQD3uJ0v8bJNAsGHWNfbdov323EYnyhVLOk8
 
 
 ###
@@ -42,18 +42,18 @@ POST https://acfhlg320d.execute-api.sa-east-1.amazonaws.com/dev/admin/login
 Content-Type: application/json
 
 {
-  "usuario": "admin1",
-  "contrasenia":"admin123"
+  "usuario": "AdminCiicg2025",
+  "contrasenia":"Ciicg_the_Big281!"
 }
+
 ###
-PUT http://localhost:3000/user/actualizarUsuario/20833991-5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTAyNjQ5NywiZXhwIjoxNzQ1MDMwMDk3fQ.NI9UgtY6BN91VLngaODtoOYzJncUnJWqLyDFqjTKS14
+PUT http://localhost:3000/user/actualizarUsuario/222221046-1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQiLCJ1c2VybmFtZSI6IkFkbWluQ2lpY2cyMDI1IiwiaWF0IjoxNzQ1ODA4MDM0LCJleHAiOjE3NDU4MTE2MzR9.pyH0QjPG8rm2D_qupIazqn3F2sIg-9bRF_VxzQIRIkc
 Content-Type: application/json
 
 {
-  "nombre": "Francisco Concha ",
-  "carrera": "Ingeniería en Control de Gestión",
-  "rutB": "45257401-2"
+  
+  "rutB": "22221046-1"
 }
 
 ####
@@ -61,8 +61,8 @@ post http://localhost:3000/admin/login
 Content-Type: application/json
   
 {
-  "usuario": "admin1",
-  "contrasenia":"admin123"
+  "usuario": "AdminCiicg2025",
+  "contrasenia":"Ciicg_the_Big281!"
 }
 
 ### 
@@ -72,15 +72,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 ### 
 put http://localhost:3000/user/actualizar
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTYxODQ3OCwiZXhwIjoxNzQ1NjIyMDc4fQ.8iYUre-Bx5Q0MI2iB-tByq3c-CWKACZDrw5IhSGpmjM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTc4NTI2OSwiZXhwIjoxNzQ1Nzg4ODY5fQ.uS4oZ13Q1T2dzyqncRxs5GyrrZXnV2x3LOv8Rt4xVPg
 
 {
-  "rut": "98001051-9"
+  "rut": "21447600-2"
 }
 
 ###
-get http://localhost:3000/user/all
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NzQ3MSwiZXhwIjoxNzQ1NjUxMDcxfQ.K-iK34kQGHuC9dh6wnqAsGQhtNJ_iDdLC1gk8U6z4vQ
+get http://localhost:3000/user/21447600-2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTc4NTI2OSwiZXhwIjoxNzQ1Nzg4ODY5fQ.uS4oZ13Q1T2dzyqncRxs5GyrrZXnV2x3LOv8Rt4xVPg
 
 ###
 get http://localhost:3000/user/verificarJWT

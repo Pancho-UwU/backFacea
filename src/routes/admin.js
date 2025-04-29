@@ -4,6 +4,6 @@ import { authLimiter } from '../middlewares/authLimitMiddelwares.js';
 
 const adminRouter = Router();
 
-adminRouter.post('/login',authLimiter   ,adminController.login);
+adminRouter.post('/login',authLimiter ,adminController.login);
 
 export default adminRouter;

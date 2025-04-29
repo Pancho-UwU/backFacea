@@ -1,4 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { ScanCommand, UpdateItemCommand  } from "@aws-sdk/client-dynamodb";
+
 import dotenv from 'dotenv';
 dotenv.config();
 // Configurar DynamoDB Local
@@ -10,7 +12,6 @@ const client = new DynamoDBClient({
     secretAccessKey: process.env.DYNAMODB_PASSWORD, // ✅ Tus claves reales
   },
 });
-
-  
+// Función para actualizar un elemento
 
 export default client;

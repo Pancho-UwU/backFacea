@@ -19,7 +19,7 @@ export class userModel
             FilterExpression: 'rut = :rut AND isActive = :isActive',
             ExpressionAttributeValues: {
                 ':rut': {S: rut},
-                ':isActive': {N: "1"},
+                ':isActive': {S: "1"},
             },
         };
         try{
@@ -29,7 +29,7 @@ export class userModel
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
                 rut: items.rut.S,
-                isActive: parseInt(items.isActive.N)
+                isActive: items.isActive.S
 
             }))
             return users[0]
@@ -56,7 +56,7 @@ export class userModel
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
                 rut: items.rut.S,
-                isActive: parseInt(items.isActive.N)
+                isActive: items.isActive.S
 
             }))
 
@@ -79,10 +79,10 @@ export class userModel
                 });
             }
             if(isActive === undefined){
-                users = users.filter(user => user.isActive === 1);
+                users = users.filter(user => user.isActive === "1");
             }
             else{
-                users = users.filter(user => user.isActive === parseInt(isActive));
+                users = users.filter(user => user.isActive === isActive);
             }
             let inicio = page*limit
             let fin = parseInt(inicio)+parseInt(limit)
@@ -130,7 +130,6 @@ export class userModel
                 create: false,
              };
         }
-        console.log(2);
 
         const params = {
             TableName: 'usuarios',
@@ -139,7 +138,7 @@ export class userModel
                 'rut': { S: rut },  
                 'nombre': { S: nombre }, 
                 'carrera': { S: carrera },
-                'isActive': { N: "1" },
+                'isActive': { S: "1" },
                 
             },
         };
@@ -150,7 +149,7 @@ export class userModel
                 rut: params.Item.rut.S,
                 nombre: params.Item.nombre.S,
                 carrera: params.Item.carrera.S,
-                isActive: params.Item.isActive.N
+                isActive: params.Item.isActive.S
             }
             return user;
         } catch (error) {
@@ -168,14 +167,14 @@ export class userModel
             TableName:'usuarios',
             FilterExpression: 'isActive = :isActive',
             ExpressionAttributeValues: {
-                ':isActive': {N: '1'},
+                ':isActive': {S: '1'},
             },
         };
         
         try{
 
             const result = await client.send(new ScanCommand(params));
-            if(!result.Items || result.Items === 0){
+            if(!result.Items || result.Items.length === 0){
                 return[]
             }
             const users = result.Items.map(items=>({
@@ -183,7 +182,7 @@ export class userModel
                 nombre: items.nombre.S,
                 rut:items.rut.S,
                 carrera:items.carrera.S,
-                isActive: parseInt(items.isActive.N )
+                isActive: items.isActive.S
             }))
             let inicio = page*limit
             let fin = parseInt(inicio)+parseInt(limit)
@@ -213,7 +212,7 @@ export class userModel
             TableName:'usuarios',
             FilterExpression: 'isActive = :isActive',
             ExpressionAttributeValues: {
-                ':isActive': {N: '1'},
+                ':isActive': {S: '1'},
             },
         };
         
@@ -228,7 +227,7 @@ export class userModel
                 nombre: items.nombre.S,
                 rut:items.rut.S,
                 carrera:items.carrera.S,
-                isActive: parseInt(items.isActive.N )
+                isActive: items.isActive.S
             }))
             
             return users;
@@ -245,56 +244,75 @@ export class userModel
    
     @
     */
-    static async updateUser({input1, input2})
-    {
+    static async updateUser({input1, input2}) {
         const { rut } = input1;
         const objeto = input2;
         
-        const userShear = await this.getUserByRut(rut)
-        if(!userShear || userShear.length ===0){
-            return{message:'usuario no existe'};
+        // Check if user exists
+        const userShear = await this.getUserByRut(rut);
+        if(!userShear || userShear.length === 0) {
+            return { message: 'Usuario no existe' };
         }
-        if(Object.keys(objeto).length === 0)
-            {
-                return {message:'datos no enviados'}
-            }
-        const UpdateExpression_ =[]
-        const ExpressionAttributeValues = {}
-        const ExpressionAttributeNames = {}
-        if(objeto.rutB === rut || objeto.rutB )
-            {
-                const restultUser = await this.getUserByRut(objeto.rutB);
-                if(restultUser.length >0 || !restultUser ){
-                    return {message: 'Rut a actualizar ya existente'+ restultUser.length}
+        
+        // Check if update data is provided
+        if(Object.keys(objeto).length === 0) {
+            return { message: 'Datos no enviados' };
+        }
+        
+        // Manejar la actualización de RUT (si existe rutB en el objeto)
+        let nuevoRut = null;
+        if(objeto.rutB) {
+            // Solo validar el nuevo RUT si es diferente del actual
+            if(objeto.rutB !== rut) {
+                // Verificar si el nuevo RUT ya existe
+                const resultUser = await this.getUserByRut(objeto.rutB);
+                if(resultUser && resultUser.length > 0) {
+                    return { message: 'Rut a actualizar ya existente: ' + resultUser.length };
                 }
+                // Guardamos el nuevo valor del RUT
+                nuevoRut = objeto.rutB;
             }
+        }
         
+        // Preparar expresión de actualización
+        const UpdateExpression_ = [];
+        const ExpressionAttributeValues = {};
+        const ExpressionAttributeNames = {};
         
-        for (const key in objeto)
-            {
-                UpdateExpression_.push(`#${key}= :${key}`);
-                ExpressionAttributeValues[`:${key}`]=objeto[key];
-                ExpressionAttributeNames[`#${key}`]=key;
+        // Si vamos a actualizar el RUT, asegurarnos de incluirlo correctamente
+        if(nuevoRut) {
+            // Si rutB es para validación pero el campo real es 'rut', hacemos esta conversión
+            UpdateExpression_.push(`#rut = :rut`);
+            ExpressionAttributeValues[`:rut`] = nuevoRut;
+            ExpressionAttributeNames[`#rut`] = 'rut'; // Asegúrate que coincida con el nombre real en la BD
+        }
+        
+        // Procesar resto de campos (excluyendo rutB que ya procesamos)
+        for (const key in objeto) {
+            if(key !== 'rutB') { // Excluimos rutB ya que lo procesamos por separado
+                UpdateExpression_.push(`#${key} = :${key}`);
+                ExpressionAttributeValues[`:${key}`] = objeto[key];
+                ExpressionAttributeNames[`#${key}`] = key;
             }
-                
-        const params={
-            TableName:'usuarios',
-            Key:{id:userShear[0].id},
-            UpdateExpression:'SET ' +UpdateExpression_.join(', '),
+        }
+        
+        // Parámetros para actualización en DynamoDB
+        const params = {
+            TableName: 'usuarios',
+            Key: { id: userShear[0].id },
+            UpdateExpression: 'SET ' + UpdateExpression_.join(', '),
             ExpressionAttributeValues,
             ExpressionAttributeNames,
-            ReturnValue: 'ALL_NEW'
+            ReturnValues: 'ALL_NEW'
         };
-        try{
-            const result = await client.send(new UpdateCommand(params));
-            return {message: 'Usuario Actualizado con éxito',data: result.Attributes}
-        }
-        catch(error)
-        {
-            throw new Error('Error al actualizar el usuario '+ error.message);
-        }
         
-
+        try {
+            console.log('Parámetros de actualización:', JSON.stringify(params, null, 2));
+            const result = await client.send(new UpdateCommand(params));
+            return { message: 'Usuario actualizado con éxito', data: result.Attributes };
+        } catch(error) {
+            throw new Error('Error al actualizar el usuario: ' + error.message);
+        }
     }
     
     /*
@@ -308,20 +326,19 @@ export class userModel
             return { message: 'Usuario no encontrado' };
         }
         
-
         const params = {
             TableName: 'usuarios',  
             Key: { id: userP[0].id},
             UpdateExpression: 'set isActive = :isActive',
             ExpressionAttributeValues: {
-                ':isActive': userP[0].isActive == 0 ? '1' : '0', // Cambia el estado de isActive
+                ':isActive': userP[0].isActive == "0" ? '1' : '0', // Cambia el estado de isActive
             },
             ReturnValue: 'UPDATED_NEW' 
         };
 
         try {
-            console.log("holaa")
             await client.send(new UpdateCommand(params));
+
             console.log('Usuario desactivado:', rut);
             return { message: 'Usuario desactivado/activado' };
         } catch (error) {
@@ -350,7 +367,7 @@ export class userModel
                 rut: items.rut.S,
                 nombre: items.nombre.S,
                 carrera: items.carrera.S,
-                isActive: parseInt(items.isActive.N)
+                isActive: items.isActive.S
             }))
             return users
         }catch(error){
