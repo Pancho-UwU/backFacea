@@ -85,3 +85,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2Vyb
 ###
 get http://localhost:3000/user/verificarJWT
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluMSIsImlhdCI6MTc0NTY0NzQ3MSwiZXhwIjoxNzQ1NjUxMDcxfQ.K-iK34kQGHuC9dh6wnqAsGQhtNJ_iDdLC1gk8U6z4vQ
+
+###
+post http://localhost:3000/admin/login
+Content-type: application/json
+
+{
+  "usuario": "AdminCiicg2025",
+  "contrasenia":"Ciicg_the_Big281!"
+}
+###
+POST http://localhost:3000/admin/refresh 

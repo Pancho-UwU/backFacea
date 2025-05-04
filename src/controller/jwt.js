@@ -12,15 +12,15 @@ export const refreshToken = (req, res, next) => {
             process.env.JWT_SECRET,
             {
                 expiresIn: process.env.JWT_EXPIRES_IN,
-                algorithm: 'hs256'
+                algorithm: 'HS256'
             });
-            res.cookies('token',newToken,{
+            res.cookie('token',newToken,{
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', 
                 sameSite: 'Strict', 
                 maxAge:  60 * 60 * 1000 
             })
-            return res.status(200).json({token: nuevoAccesoToken, message: "Token de acceso renovado" });
+            return res.status(200).json({token: newToken, message: "Token de acceso renovado" });
     }
     catch(error){
         res.status(401).json({ message: "Error al renovar el token de acceso", error:error.message });

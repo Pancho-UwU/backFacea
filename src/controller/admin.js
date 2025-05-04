@@ -4,16 +4,18 @@ import { jwtGenerate, jwtGenerateRefresh } from "../utils/jwtGenerate.js";
 
 export class adminController {
     static async login(req, res) {
+        console.log(req.body)
         const result1 = validateAdminParse(req.body);
         if (!result1.success) {
             return res.status(400).json({ message: "Error en la validacion", errors: result1.error.errors });
         }
         try {
             const result = await adminModel.login( {input: result1.data });
-            if (!result.inicio ) {
+            if (result.inicio ===false ) {
                 return res.status(401).json({ message: result.message });
             }
             const token = jwtGenerate(result);
+            console.log(token)
             res.cookie('token', token,{
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', 
@@ -29,7 +31,8 @@ export class adminController {
             })
             return res.status(200).json({token, message: "Inicio de sesión exitoso", usuario: result.usuario });
         } catch (error) {
-            return res.status(401).json({ message: "Error en el login",error:error.message });
+            console.log(error.message)
+            return res.status(401).json({ message: "Error en el login", error:error.message });
         }
     }
 }

@@ -11,7 +11,7 @@ export const jwtGenerate = (user) => {
     process.env.JWT_SECRET,
     {
         expiresIn: process.env.JWT_EXPIRES_IN,
-        algorithm: 'hs256'
+        algorithm: 'HS256'
     }           
     );
 
@@ -24,7 +24,7 @@ export const jwtGenerateRefresh = (user) => {
     process.env.JWT_SECRET_REFRESH,
     {
         expiresIn: process.env.JWT_EXPIRES_REFRESH,
-        algorithm: 'hs256'
+        algorithm: 'HS256'
     }           
     );
 
