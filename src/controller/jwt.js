@@ -1,29 +1,29 @@
 import jsonwebtoken from 'jsonwebtoken';
-const { TokenExpiredError, JsonWebTokenError } = jsonwebtoken;
 
-export const checkToJWTExpireTime = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'No token provided' });
+export const refreshToken = (req, res, next) => {
+    const refreshToken = req.cookies.refreshToken;
+    if(!refreshToken){
+        return res.status(401).json({ message: "No refresh token provided" });
+    }
+    try{
+        const payload =jsonwebtoken.verify(refreshToken, process.env.JWT_SECRET_REFRESH);
+        const newToken = jsonwebtoken.sign({
+            sub: payload.sub},
+            process.env.JWT_SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRES_IN,
+                algorithm: 'hs256'
+            });
+            res.cookies('token',newToken,{
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', 
+                sameSite: 'Strict', 
+                maxAge:  60 * 60 * 1000 
+            })
+            return res.status(200).json({token: nuevoAccesoToken, message: "Token de acceso renovado" });
+    }
+    catch(error){
+        res.status(401).json({ message: "Error al renovar el token de acceso", error:error.message });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    jsonwebtoken.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            if (err instanceof TokenExpiredError) {
-
-                return res.status(401).json({ message: 'Token has expired' });
-            } else if (err instanceof JsonWebTokenError) {
-
-                return res.status(401).json({ message: 'Invalid token' });
-            } else {
-
-                return res.status(500).json({ message: 'Internal server error' });
-            }
-        }
-
-        req.user = decoded.user;
-        next();
-    });
 };

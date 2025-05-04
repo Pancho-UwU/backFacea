@@ -1,7 +1,5 @@
-import { number } from "zod";
 import { userModel } from "../models/User.js";
 import { validatePartialUserCreate, validatePartialUserUpdate, validateUserCreate } from "../schema/userSchema.js";
-import e from "express";
 
 export class usuarioController {
     static async getUser(req, res) {
@@ -21,6 +19,7 @@ export class usuarioController {
         }
     }
     static async getAllUsers(req, res) {
+        
         try{
             const {limit,page } = req.query
             const {items, itemsTotal,contPage} = await userModel.getAllUsers({
@@ -67,7 +66,6 @@ export class usuarioController {
     }
     static async postUser(req, res) {
 
-        console.log(req.body)
         const result = validateUserCreate(req.body);
         if (!result.success) {
             return res.status(400).json({ message: "Error en la validacion estaa", errors: result.error.errors });

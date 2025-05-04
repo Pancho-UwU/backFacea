@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import client from '../dataBase/Database.js';
-import {validatorRut}  from "../validators/validatorRut.js";
-import { PutItemCommand, ReturnValue, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 
@@ -116,12 +115,7 @@ export class userModel
         const { rut, nombre, carrera } = input;
 
 
-        if (!validatorRut.validarRutChileno(rut)) {
-            console.log('El rut no es valido', rut); 
-            return { message: 'El rut no es valido',
-                create: false,
-             };
-        }
+       
                 
         // Verificar si el usuario ya existe
         const existingUser = await this.getUserByRut(rut);
